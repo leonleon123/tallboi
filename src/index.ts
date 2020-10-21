@@ -1,9 +1,9 @@
-function test(a: number, b: number): number{
-    return (a + b);
-}
-
+import { test } from './func';
 console.log(test(4, 4) + 10);
 
-const canvas =  document.querySelector('canvas');
-const gl = canvas?.getContext('webgl2');
+window.addEventListener('load', () => {
+    const canvas =  document.querySelector('canvas');
+    const gl = canvas?.getContext('webgl2');
+    console.log(gl);
+});
 
