@@ -3,8 +3,9 @@ html, body{
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0;
 }
 
 canvas{
-    background-color: salmon;
+    background-color: aquamarine;
 }

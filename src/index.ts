@@ -7,12 +7,13 @@ let indexBuffer: WebGLBuffer;
 let vertexShader: WebGLShader;
 let fragmentShader: WebGLShader;
 let program: WebGLProgram;
-let uModelViewProjection: WebGLUniformLocation;
+let uMvcLocation: WebGLUniformLocation;
 
 let vertices: Float32Array;
 let indices: Uint16Array;
 
 let gl: WebGL2RenderingContext;
+let x = 0;
 
 
 window.addEventListener('load', async () => {
@@ -20,10 +21,9 @@ window.addEventListener('load', async () => {
     gl = canvas?.getContext('webgl2') as WebGL2RenderingContext;
     if (!gl) { return; }
 
-    const mesh = await getMesh();
+    const mesh = await getMesh('lamp.obj');
     vertices = new Float32Array(mesh.vertices);
     indices = new Uint16Array(mesh.indices);
-    console.log(indices);
 
     indexBuffer = gl.createBuffer() as WebGLBuffer;
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -47,21 +47,27 @@ window.addEventListener('load', async () => {
 
     gl.linkProgram(program);
 
-    uModelViewProjection = gl.getUniformLocation(program, 'uModelViewProjection') as WebGLUniformLocation;
+    uMvcLocation = gl.getUniformLocation(program, 'uMVC') as WebGLUniformLocation;
     render();
 });
-let x = 0;
+
+function getMvc(): mat4{
+    const M: mat4 = mat4.create();
+
+    mat4.translate(M, M, vec3.fromValues(Math.sin(x), 0, 0));
+    mat4.rotateX(M, M, Math.sin(x) * Math.PI);
+    mat4.rotateY(M, M, Math.sin(x) * Math.PI);
+    mat4.scale(M, M, vec3.fromValues(0.1, 0.1, 0.1));
+
+    x += 0.01;
+
+    return M;
+}
+
 function render(): void {
     gl.useProgram(program);
 
-    const M: mat4 = mat4.create();
-    mat4.scale(M, M, vec3.fromValues(0.01, 0.01, 0.01));
-    mat4.rotateX(M, M, Math.sin(x) * Math.PI * 2);
-    mat4.rotateY(M, M, Math.sin(x) * Math.PI * 2);
-    mat4.translate(M, M, vec3.fromValues(-30, -30, -20));
-    gl.uniformMatrix4fv(uModelViewProjection, false, M);
-    x += 0.01;
-    // gl.uniformMatrix4fv()
+    gl.uniformMatrix4fv(uMvcLocation, false, getMvc());
 
     const activeAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
     const attributes: {[key: string]: number} = {};
@@ -74,12 +80,12 @@ function render(): void {
     gl.enableVertexAttribArray(attributes.aPosition);
     gl.vertexAttribPointer(attributes.aPosition, 3, gl.FLOAT, false, 0, 0);
 
-    gl.drawElements(gl.LINE_LOOP, 27, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
     requestAnimationFrame(render);
 }
 
-async function getMesh(): Promise<Mesh>{
-    const req = await fetch('assets/diamond.obj');
+async function getMesh(file: string): Promise<Mesh>{
+    const req = await fetch(`assets/${file}`);
     const text = await req.text();
     const mesh = new Mesh(text);
     return new Promise((resolve, reject) => resolve(mesh));
