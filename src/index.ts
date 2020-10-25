@@ -7,10 +7,12 @@ let indexBuffer: WebGLBuffer;
 let vertexShader: WebGLShader;
 let fragmentShader: WebGLShader;
 let program: WebGLProgram;
-let uMvcLocation: WebGLUniformLocation;
+let uMVPLocation: WebGLUniformLocation;
 
 let vertices: Float32Array;
 let indices: Uint16Array;
+
+const bgColor: number[] = [240 / 256, 198 / 256, 120 / 256, 1];
 
 let gl: WebGL2RenderingContext;
 let x = 0;
@@ -47,27 +49,40 @@ window.addEventListener('load', async () => {
 
     gl.linkProgram(program);
 
-    uMvcLocation = gl.getUniformLocation(program, 'uMVC') as WebGLUniformLocation;
+    uMVPLocation = gl.getUniformLocation(program, 'uMVP') as WebGLUniformLocation;
     render();
 });
 
-function getMvc(): mat4{
+function getMVP(): mat4{
     const M: mat4 = mat4.create();
-
-    mat4.translate(M, M, vec3.fromValues(Math.sin(x), 0, 0));
+    // mat4.translate(M, M, vec3.fromValues(Math.cos(x), 0, Math.sin(x)));
     mat4.rotateX(M, M, Math.sin(x) * Math.PI);
-    mat4.rotateY(M, M, Math.sin(x) * Math.PI);
+    mat4.rotateY(M, M, -Math.sin(x) * Math.PI / 2);
+    mat4.rotateZ(M, M, Math.PI / 2);
+    mat4.translate(M , M, vec3.fromValues(0, 1, 0));
     mat4.scale(M, M, vec3.fromValues(0.1, 0.1, 0.1));
 
-    x += 0.01;
+    const P: mat4 = mat4.create();
+    mat4.perspective(P, Math.PI / 2, 1, 0.1, 10);
+    mat4.rotateX(P, P, Math.PI / 12);
+    mat4.translate(P, P, vec3.fromValues(0, -1, -3));
 
-    return M;
+    const MVP: mat4 = mat4.create();
+    mat4.mul(MVP, M, MVP);
+    mat4.mul(MVP, P, MVP);
+
+    x += 0.02;
+
+    return MVP;
 }
 
 function render(): void {
+    gl.clearColor(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
     gl.useProgram(program);
 
-    gl.uniformMatrix4fv(uMvcLocation, false, getMvc());
+    gl.uniformMatrix4fv(uMVPLocation, false, getMVP());
 
     const activeAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
     const attributes: {[key: string]: number} = {};
