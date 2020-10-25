@@ -3,10 +3,14 @@ import { Mesh } from 'webgl-obj-loader';
 import { fragment, vertex } from './shaders';
 
 let vertexBuffer: WebGLBuffer;
+let indexBuffer: WebGLBuffer;
 let vertexShader: WebGLShader;
 let fragmentShader: WebGLShader;
 let program: WebGLProgram;
 let uModelViewProjection: WebGLUniformLocation;
+
+let vertices: Float32Array;
+let indices: Uint16Array;
 
 let gl: WebGL2RenderingContext;
 
@@ -16,8 +20,14 @@ window.addEventListener('load', async () => {
     gl = canvas?.getContext('webgl2') as WebGL2RenderingContext;
     if (!gl) { return; }
 
-    const vertices = await getVertices();
-    console.log(vertices);
+    const mesh = await getMesh();
+    vertices = new Float32Array(mesh.vertices);
+    indices = new Uint16Array(mesh.indices);
+    console.log(indices);
+
+    indexBuffer = gl.createBuffer() as WebGLBuffer;
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
     vertexBuffer = gl.createBuffer() as WebGLBuffer;
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -64,13 +74,13 @@ function render(): void {
     gl.enableVertexAttribArray(attributes.aPosition);
     gl.vertexAttribPointer(attributes.aPosition, 3, gl.FLOAT, false, 0, 0);
 
-    gl.drawArrays(gl.LINE_LOOP, 0, 6);
+    gl.drawElements(gl.LINE_LOOP, 27, gl.UNSIGNED_SHORT, 0);
     requestAnimationFrame(render);
 }
 
-async function getVertices(): Promise<Float32Array>{
+async function getMesh(): Promise<Mesh>{
     const req = await fetch('assets/diamond.obj');
     const text = await req.text();
     const mesh = new Mesh(text);
-    return new Promise((resolve, reject) => resolve(new Float32Array(mesh.vertices)));
+    return new Promise((resolve, reject) => resolve(mesh));
 }
