@@ -12,13 +12,20 @@ let uMVPLocation: WebGLUniformLocation;
 let vertices: Float32Array;
 let indices: Uint16Array;
 
-const bgColor: number[] = [240 / 256, 198 / 256, 120 / 256, 1];
-
 let gl: WebGL2RenderingContext;
-let x = 0;
 
+let x = 0;
+const bgColor: number[] = [240 / 256, 198 / 256, 120 / 256, 1];
+const pos: vec3 = vec3.create();
+const keyPressX: {[key: string]: number} = {a: -0.1, d: 0.1};
+const keyPressZ: {[key: string]: number} = {w: -0.1, s: 0.1};
 
 window.addEventListener('load', async () => {
+    document.addEventListener('keypress', (event: KeyboardEvent) => {
+        pos[0] += keyPressX[event.key] || 0;
+        pos[2] += keyPressZ[event.key] || 0;
+    });
+
     const canvas =  document.querySelector('canvas');
     gl = canvas?.getContext('webgl2') as WebGL2RenderingContext;
     if (!gl) { return; }
@@ -55,17 +62,16 @@ window.addEventListener('load', async () => {
 
 function getMVP(): mat4{
     const M: mat4 = mat4.create();
-    // mat4.translate(M, M, vec3.fromValues(Math.cos(x), 0, Math.sin(x)));
+    mat4.translate(M , M, pos);
     mat4.rotateX(M, M, Math.sin(x) * Math.PI);
-    mat4.rotateY(M, M, -Math.sin(x) * Math.PI / 2);
+    mat4.rotateY(M, M, Math.sin(x) * Math.PI / 2);
     mat4.rotateZ(M, M, Math.PI / 2);
-    mat4.translate(M , M, vec3.fromValues(0, 1, 0));
     mat4.scale(M, M, vec3.fromValues(0.1, 0.1, 0.1));
 
     const P: mat4 = mat4.create();
-    mat4.perspective(P, Math.PI / 2, 1, 0.1, 10);
+    mat4.perspective(P, Math.PI / 3, 1, 0.1, 100);
     mat4.rotateX(P, P, Math.PI / 12);
-    mat4.translate(P, P, vec3.fromValues(0, -1, -3));
+    mat4.translate(P, P, vec3.fromValues(0, -3, -6));
 
     const MVP: mat4 = mat4.create();
     mat4.mul(MVP, M, MVP);

@@ -4,17 +4,22 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "start": "npm run build && watchify dist/index.js -o dist/main.js & tsc -w",
-    "build": "tsc && browserify dist/index.js -o dist/main.js"
+    "start": "gulp start",
+    "build": "gulp build"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "browser-sync": "^2.26.13",
     "browserify": "^17.0.0",
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.3.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "gulp-uglify": "^3.0.2",
     "ts-node": "^9.0.0",
     "tslint": "^6.1.3",
     "typescript": "^4.0.3",
-    "watchify": "^3.11.1"
+    "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
     "gl-matrix": "^3.3.0",
