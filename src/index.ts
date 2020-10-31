@@ -30,7 +30,8 @@ window.addEventListener('load', async () => {
     gl = canvas?.getContext('webgl2') as WebGL2RenderingContext;
     if (!gl) { return; }
 
-    const mesh = await getMesh('lamp.obj');
+    const mesh = await getMesh('map.obj');
+
     vertices = new Float32Array(mesh.vertices);
     indices = new Uint16Array(mesh.indices);
 
@@ -62,11 +63,11 @@ window.addEventListener('load', async () => {
 
 function getMVP(): mat4{
     const M: mat4 = mat4.create();
-    mat4.translate(M , M, pos);
-    mat4.rotateX(M, M, Math.sin(x) * Math.PI);
-    mat4.rotateY(M, M, Math.sin(x) * Math.PI / 2);
-    mat4.rotateZ(M, M, Math.PI / 2);
-    mat4.scale(M, M, vec3.fromValues(0.1, 0.1, 0.1));
+    // mat4.translate(M , M, pos);
+    // mat4.rotateX(M, M, Math.sin(x) * Math.PI);
+    // mat4.rotateY(M, M, Math.sin(x) * Math.PI / 2);
+    mat4.rotateY(M, M, Math.sin(x));
+    mat4.scale(M, M, vec3.fromValues(0.3, 0.3, 0.3));
 
     const P: mat4 = mat4.create();
     mat4.perspective(P, Math.PI / 3, 1, 0.1, 100);
@@ -101,7 +102,7 @@ function render(): void {
     gl.enableVertexAttribArray(attributes.aPosition);
     gl.vertexAttribPointer(attributes.aPosition, 3, gl.FLOAT, false, 0, 0);
 
-    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.LINE_LOOP, indices.length, gl.UNSIGNED_SHORT, 0);
     requestAnimationFrame(render);
 }
 
