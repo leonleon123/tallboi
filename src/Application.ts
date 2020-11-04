@@ -24,7 +24,12 @@ export default class Application {
     }
 
     update = (): void => {
-        this.scene.update();
+        var now = Date.now();
+        var dt = now - this.scene.lastUpdate;
+        this.scene.lastUpdate = now;
+        console.log(dt / 1000);
+        
+        this.scene.update(dt);
         this.render();
         requestAnimationFrame(this.update);
     }

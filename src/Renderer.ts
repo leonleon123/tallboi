@@ -8,7 +8,7 @@ export class Renderer{
     ) { }
 
     public renderScene(scene: Scene): void{
-        for (const entity of scene.entities){
+        for (const entity of scene.entManager.entities){
             this.renderEntity(entity);
         }
     }
