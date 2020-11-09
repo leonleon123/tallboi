@@ -1,18 +1,18 @@
-import { Vec3 } from 'webgl-obj-loader';
-import { Entity } from '../Entity';
-export class Player extends Entity
-{
-    speed: number = 5.0; //placeholder
-    //todo: figure out what else
-    constructor(id:number,origin:Vec3)
-    {
-        super(id,origin);
-        this.name = "player_name"
-        this.class = "player"
-        this.spawnPoint = origin;
+import { vec3 } from 'gl-matrix';
+import { Entity } from './Entity';
+
+export class Player extends Entity {
+    // placeholder
+    private speed = 5.0;
+
+    // todo: figure out what else
+    constructor(id: number, origin: vec3) {
+        super(id, origin);
+        this.name = 'player_name';
+        this.origin = origin;
     }
 
-    update (dt:number) : void {
-        
+    public update(dt: number): void {
+
     }
 }

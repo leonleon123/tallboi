@@ -1,46 +1,38 @@
-import { Vec3 } from "webgl-obj-loader";
-import { Exit } from "./Entities/Exit";
-import { Pickup } from "./Entities/Pickup";
-import { Player } from "./Entities/Player";
-import { Entity } from "./Entity";
+import { vec3 } from 'gl-matrix';
+import { Mesh } from 'webgl-obj-loader';
+import { Entity } from './Entities/Entity';
+import { Exit } from './Entities/Exit';
+import { Map } from './Entities/Map';
+import { Pickup } from './Entities/Pickup';
+import { Player } from './Entities/Player';
 
-export class EntityManager
-{
-    entities: Entity[];
-    idGenerator : number = 0;
-    addPlayer(origin:Vec3) : void 
-    {
-        let pl = new Player(this.idGenerator,origin);
-        this.entities.push(pl);
-        this.idGenerator++;
+export class EntityManager {
+
+    public entities: Entity[];
+    public player: Player;
+    private idGenerator = 0;
+
+    public createPlayerAt(origin: vec3): void {
+        this.player = new Player(this.idGenerator++, origin);
+        this.entities.push(this.player);
     }
 
-    addPickup(origin:Vec3) : void 
-    {
-        let pu = new Pickup(this.idGenerator,origin);
+    public addPickup(origin: vec3): void {
+        const pu = new Pickup(this.idGenerator++, origin);
         this.entities.push(pu);
-        this.idGenerator++;
     }
 
-    addExit(origin:Vec3) : void 
-    {
-        let ex = new Exit(this.idGenerator,origin);
+    public createExitAt(origin: vec3): void {
+        const ex = new Exit(this.idGenerator++, origin);
         this.entities.push(ex);
-        this.idGenerator++;
     }
 
-    getPlayer() : Player | null {
-        for(var i = 0; i < this.entities.length;i++)
-        {   
-            if(this.entities[i].class = "player")
-            {
-                return <Player>this.entities[i];
-            }
-        }
-        return null;
+    public createMap(mesh: Mesh): void{
+        const map = new Map(this.idGenerator++, vec3.fromValues(0, 0, 0), mesh);
+        this.entities.push(map);
     }
-    constructor()
-    {
+
+    constructor() {
         this.entities = [];
     }
 }

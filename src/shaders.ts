@@ -1,10 +1,12 @@
+import { Shader } from './Interfaces';
+
 export const vertex =
 `#version 300 es
 
 uniform mat4 uMVP;
 
-in vec4 aPosition;
-in vec4 aColor;
+layout (location = 0) in vec4 aPosition;
+
 out vec4 vColor;
 
 void main() {
@@ -25,3 +27,5 @@ void main() {
     oColor = vec4(0,0,0,1);
 }
 `;
+
+export const simpleShader: Shader = { vertex, fragment};

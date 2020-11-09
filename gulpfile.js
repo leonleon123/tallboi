@@ -8,7 +8,7 @@ const uglify = require('gulp-uglify')
 const tsProject = ts.createProject('tsconfig.json')
 
 gulp.task('compile', function() {
-    return gulp.src('src/*.ts')
+    return gulp.src('src/**/*.ts')
         .pipe(tsProject())
         .pipe(gulp.dest('dist'))
 })
@@ -32,7 +32,7 @@ gulp.task('start', function(){
             baseDir: './',
         }
     })
-    gulp.watch('src/*.ts', gulp.series('compile', 'browserify', 'uglify'))
+    gulp.watch('src/**/*.ts', gulp.series('compile', 'browserify', 'uglify'))
     gulp.watch('dist/*.js').on('change', browserSync.reload)
     gulp.watch('index.html').on('change', browserSync.reload)
     gulp.watch('css/*.css').on('change', browserSync.reload)

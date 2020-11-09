@@ -1,3 +1,5 @@
+import { Shader } from './Interfaces';
+
 export function createShader(gl: WebGL2RenderingContext, source: string, type: number): WebGLShader {
     const shader = gl.createShader(type) as WebGLShader;
     gl.shaderSource(shader, source);
@@ -48,15 +50,10 @@ export function createProgram(gl: WebGL2RenderingContext, shaders: WebGLShader[]
     return { program, attributes, uniforms } as Program;
 }
 
-interface Shader{
-    vertex: string;
-    fragment: string;
-}
-
 type Shaders = {[key: string]: Shader};
 type Programs = {[key: string]: Program};
 
-export function buildPrograms(gl: WebGL2RenderingContext, shaders: Shaders ): Programs {
+export function buildPrograms(gl: WebGL2RenderingContext, shaders: Shader[] ): Programs {
     const programs = {} as Programs;
     // tslint:disable-next-line: forin
     for (const name in shaders) {
@@ -72,3 +69,4 @@ export function buildPrograms(gl: WebGL2RenderingContext, shaders: Shaders ): Pr
     }
     return programs;
 }
+

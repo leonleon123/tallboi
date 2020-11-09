@@ -12,29 +12,26 @@ export default class Application {
         if (!this.gl) {
             throw new Error('Cannot create WebGL 2.0 context');
         }
-
         this.scene = new Scene();
         this.renderer = new Renderer(this.gl);
-
-        this.start();
+        this.scene.loadAssets().then(this.init);
     }
 
-    start(): void {
+    public init = (): void => {
+        this.renderer.initScene(this.scene);
         requestAnimationFrame(this.update);
     }
 
-    update = (): void => {
-        var now = Date.now();
-        var dt = now - this.scene.lastUpdate;
-        this.scene.lastUpdate = now;
-        console.log(dt / 1000);
-        
-        this.scene.update(dt);
+    public update = (): void => {
+        this.scene.update();
         this.render();
         requestAnimationFrame(this.update);
     }
 
-    render(): void {
+    public render(): void {
         this.renderer.renderScene(this.scene);
     }
 }
+
+
+
