@@ -12,13 +12,14 @@ export class EntityManager {
     public player: Player;
     private idGenerator = 0;
 
-    public createPlayerAt(origin: vec3): void {
-        this.player = new Player(this.idGenerator++, origin);
+    public createPlayerAt(origin: vec3,mesh:Mesh): void {
+        this.player = new Player(this.idGenerator++, origin, mesh);
         this.entities.push(this.player);
     }
 
-    public addPickup(origin: vec3): void {
-        const pu = new Pickup(this.idGenerator++, origin);
+    public addPickup(origin: vec3,mesh:Mesh): void {
+        const pu = new Pickup(this.idGenerator++, origin,mesh);
+        pu.setScale(0.2,0.2,0.2);
         this.entities.push(pu);
     }
 
@@ -31,6 +32,8 @@ export class EntityManager {
         const map = new Map(this.idGenerator++, vec3.fromValues(0, 0, 0), mesh);
         this.entities.push(map);
     }
+
+    
 
     constructor() {
         this.entities = [];

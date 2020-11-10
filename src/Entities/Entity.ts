@@ -1,6 +1,8 @@
 import { vec3 } from 'gl-matrix';
 import { Mesh } from 'webgl-obj-loader';
 import { Transform } from '../Transform';
+import { UserInput } from '../UserInput';
+import { Utility } from '../Utility';
 
 export abstract class Entity {
 
@@ -27,8 +29,36 @@ export abstract class Entity {
         // todo: limits etc
     }
 
+    //maybe angles need to be normalized to -180 - 180 ??
+    public setRoll(roll: number): void {
+        if(roll < -180)
+            roll += 360;
+        if(roll >= 180)
+            roll -= 360;
+        this.trans.angle[0] = roll;
+    }
+
+    public setYaw(yaw: number): void {
+        if(yaw < -180)
+            yaw += 360;
+        if(yaw >= 180)
+            yaw -= 360;
+        this.trans.angle[1] = yaw;
+        this.trans.yawVector = [Math.cos(Utility.degToRad(yaw)),0,Math.sin(Utility.degToRad(yaw))];
+    }
+
+    public setPitch(pitch: number): void {
+        if(pitch < -180)
+            pitch += 360;
+        if(pitch >= 180)
+            pitch -= 360;
+        this.trans.angle[2] = pitch;
+    }
+
     public setAngle(roll: number, yaw: number, pitch: number): void {
-        this.trans.angle = [roll, yaw, pitch];
+        this.setRoll(roll);
+        this.setYaw(yaw);
+        this.setPitch(pitch);
         // todo: limits etc
     }
 
@@ -37,5 +67,5 @@ export abstract class Entity {
         // todo: limits etc
     }
 
-    abstract update(dt: number): void;
+    abstract update(dt: number, input: UserInput): void;
 }
