@@ -29,7 +29,7 @@ export class Renderer{
     public renderScene(scene: Scene): void{
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         this.gl.clearColor(240 / 256, 198 / 256, 120 / 256, 1);
-        this.gl.viewport(0,0,600,600);
+        this.gl.viewport(0,0,600,600); //I added this because i saw it somewhere. Do we need it? Also we need to get rid of hardcoding 600 600.
 
         this.gl.useProgram(this.program);
 

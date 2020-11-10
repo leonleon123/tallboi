@@ -44,7 +44,7 @@ export abstract class Entity {
         if(yaw >= 180)
             yaw -= 360;
         this.trans.angle[1] = yaw;
-        this.trans.yawVector = [Math.cos(Utility.degToRad(yaw)),0,Math.sin(Utility.degToRad(yaw))];
+        this.trans.yawVector = [Math.cos(Utility.degToRad(yaw)),0,-Math.sin(Utility.degToRad(yaw))]; //It should be + at sinus, but only - works. Why?
     }
 
     public setPitch(pitch: number): void {
