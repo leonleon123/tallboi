@@ -21,9 +21,6 @@ export class Renderer{
     public initScene(scene: Scene): void{
         this.buildProgram(simpleShader);
         this.uMVP = this.gl.getUniformLocation(this.program, 'uMVP')!;
-        for (const entity of scene.entManager.entities){
-            this.initEntity(entity);
-        }
     }
 
     public renderScene(scene: Scene): void{
@@ -32,9 +29,14 @@ export class Renderer{
         this.gl.viewport(0,0,600,600); //I added this because i saw it somewhere. Do we need it? Also we need to get rid of hardcoding 600 600.
 
         this.gl.useProgram(this.program);
-
+        
+        //call map render here
         for (const entity of scene.entManager.entities){
-            if (entity.active){
+            if(!entity.initialized)
+            {
+                this.initEntity(entity);
+            }
+            else if (entity.draw){
                 this.renderEntity(entity,scene.camera);
             }
         }
@@ -56,6 +58,7 @@ export class Renderer{
         this.gl.vertexAttribPointer(0, 3, this.gl.FLOAT, false, 0, 0 );
 
         entity.vao = vao!;
+        entity.initialized = true;
 
     }
 
@@ -82,6 +85,7 @@ export class Renderer{
     }
 
     private getMVP(entity: Entity, camera: Camera): mat4{
+        //entity
         const M: mat4 = mat4.create();
         mat4.translate(M , M, entity.trans.pos);
         mat4.rotateX(M, M, Utility.degToRad(entity.trans.angle[0]));
@@ -89,15 +93,12 @@ export class Renderer{
         mat4.rotateZ(M, M, Utility.degToRad(entity.trans.angle[2]));
         mat4.scale(M, M, entity.trans.scale);
 
+        //camera
         const P: mat4 = mat4.create();
         mat4.multiply(P,P,camera.perspective);
-        //mat4.perspective(P, Math.PI / 3, 1, 0.1, 100);
-        //mat4.rotateX(P, P, Math.PI / 6);
-        //mat4.rotateY(P, P, Utility.degToRad(-entity.trans.angle[1]));
-        const Z: mat4 = mat4.create();
-        mat4.lookAt(Z,camera.eye,camera.center,[0,1,0]);
-        mat4.multiply(P,P,Z);
-        //mat4.translate(P, P, vec3.fromValues(0, -4, -7));
+        const C: mat4 = mat4.create();
+        mat4.lookAt(C,camera.eye,camera.center,[0,1,0]);
+        mat4.multiply(P,P,C);
 
         const MVP: mat4 = mat4.create();
         mat4.mul(MVP, M, MVP);

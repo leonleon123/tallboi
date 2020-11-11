@@ -10,6 +10,7 @@ export abstract class Entity {
     public mesh: Mesh | null;
     public active = true;
     public draw = true;
+    public initialized = false;
     public name = 'none';
     public trans: Transform = new Transform();
     public origin: vec3;

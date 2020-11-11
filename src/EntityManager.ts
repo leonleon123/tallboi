@@ -2,7 +2,6 @@ import { vec3 } from 'gl-matrix';
 import { Mesh } from 'webgl-obj-loader';
 import { Entity } from './Entities/Entity';
 import { Exit } from './Entities/Exit';
-import { Map } from './Entities/Map';
 import { Pickup } from './Entities/Pickup';
 import { Player } from './Entities/Player';
 
@@ -26,11 +25,6 @@ export class EntityManager {
     public createExitAt(origin: vec3): void {
         const ex = new Exit(this.idGenerator++, origin);
         this.entities.push(ex);
-    }
-
-    public createMap(mesh: Mesh): void{
-        const map = new Map(this.idGenerator++, vec3.fromValues(0, 0, 0), mesh);
-        this.entities.push(map);
     }
 
     

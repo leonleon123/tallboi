@@ -10,6 +10,7 @@ export class Scene {
     public camera: Camera;
     public lastUpdate: number = Date.now();
     public idGenerator = 0;
+    //add map instance here (also create the class)
 
     constructor() {
         this.entManager = new EntityManager();
@@ -17,10 +18,9 @@ export class Scene {
     }
 
     public async loadAssets(): Promise<void> {
-        //const mesh = await this.loadAsset('map.obj');
+        
         const player_mesh = await this.loadAsset('cube.obj');
         const pickup_mesh = player_mesh;
-        //this.entManager.createMap(mesh);
         this.entManager.createPlayerAt([0,0,0],player_mesh);
         this.entManager.addPickup([0,0,2],pickup_mesh);
         this.entManager.addPickup([2,0,0],pickup_mesh);
@@ -40,7 +40,7 @@ export class Scene {
                     entity.update(dt,input);
                 }
             }
-            this.camera.update(dt,<Player>this.entManager.entities[0]); //UGLY HACK, change asap
+            this.camera.update(dt,<Player>this.entManager.entities[0],input); //UGLY HACK, change asap; need a good way to reliably get the Player entity
         }
     }
 

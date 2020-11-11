@@ -15,26 +15,44 @@ export class Player extends Entity {
         this.name = 'player';
         this.origin = origin;
         this.mesh = mesh;
+        this.trans.scale = [0.5,1.0,0.5]
     }
 
     public update(dt: number, input: UserInput): void {
+        var moveDelta = vec3.create();
         if(input.keysPressed.has("KeyW"))
         {
-            this.trans.pos[0] += this.trans.yawVector[0] * this.speed * dt;
-            this.trans.pos[2] += this.trans.yawVector[2] * this.speed * dt;
+            moveDelta[0] += this.trans.yawVector[0];
+            moveDelta[2] += this.trans.yawVector[2];
         }
-        if(input.keysPressed.has("KeyS"))
+        else if(input.keysPressed.has("KeyS"))
         {
-            this.trans.pos[0] -= this.trans.yawVector[0] * this.speed * dt;
-            this.trans.pos[2] -= this.trans.yawVector[2] * this.speed * dt;
+            moveDelta[0] -= this.trans.yawVector[0];
+            moveDelta[2] -= this.trans.yawVector[2];
         }
         if(input.keysPressed.has("KeyA"))
         {
-            this.setYaw(this.trans.angle[1]+0.5);
+            let strafeLeft = vec3.create();
+            strafeLeft = [Math.cos(Utility.degToRad(this.trans.angle[1]+90)),0,Math.sin(Utility.degToRad(this.trans.angle[1]+90))];
+            moveDelta[0] += strafeLeft[0];
+            moveDelta[2] -= strafeLeft[2];
         }
-        if(input.keysPressed.has("KeyD"))
+        else if(input.keysPressed.has("KeyD"))
         {
-            this.setYaw(this.trans.angle[1]-0.5);
+            let strafeRight = vec3.create();
+            strafeRight = [Math.cos(Utility.degToRad(this.trans.angle[1]-90)),0,Math.sin(Utility.degToRad(this.trans.angle[1]-90))];
+            moveDelta[0] += strafeRight[0];
+            moveDelta[2] -= strafeRight[2];
         }
+        if(input.mouseDelta[0] != 0)
+        {
+            this.setYaw(this.trans.angle[1]-input.mouseDelta[0]*dt*input.sensitivity);
+            input.mouseDelta[0] = 0;
+        }
+        vec3.normalize(moveDelta,moveDelta);
+        vec3.scale(moveDelta,moveDelta,this.speed);
+        vec3.scale(moveDelta,moveDelta,dt);
+        vec3.add(this.trans.pos,moveDelta,this.trans.pos);
+        
     }
 }
