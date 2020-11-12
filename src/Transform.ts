@@ -1,5 +1,5 @@
 import { vec3 } from 'gl-matrix';
-import { Utility } from './Utility';
+import { degToRad } from './Utility';
 
 export class Transform {
 
@@ -8,5 +8,5 @@ export class Transform {
     public angle: vec3 = [0, 0, 0];
     public scale: vec3 = [1, 1, 1];
 
-    public yawVector: vec3 = [Math.cos(Utility.degToRad(0)),0,Math.sin(Utility.degToRad(0))];
+    public yawVector: vec3 = [Math.cos(degToRad(0)), 0, Math.sin(degToRad(0))];
 }

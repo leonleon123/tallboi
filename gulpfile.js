@@ -26,7 +26,7 @@ gulp.task('uglify', function(){
         .pipe(gulp.dest('dist'))
 })
 
-gulp.task('start', function(){
+gulp.task('watch', function(){
     browserSync.init({
         server: {
             baseDir: './',
@@ -39,3 +39,4 @@ gulp.task('start', function(){
 })
 
 gulp.task('build', gulp.series('compile', 'browserify', 'uglify'))
+gulp.task('start', gulp.series('build', 'watch'))

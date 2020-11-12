@@ -22,6 +22,8 @@
     "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
+    "@types/cannon": "^0.1.5",
+    "cannon": "^0.6.2",
     "gl-matrix": "^3.3.0",
     "webgl-obj-loader": "^2.0.8"
   }
