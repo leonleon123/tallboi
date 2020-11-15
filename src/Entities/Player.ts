@@ -1,8 +1,9 @@
 import { vec3 } from 'gl-matrix';
 import { Mesh } from 'webgl-obj-loader';
-import { UserInput } from '../UserInput';
-import { degToRad } from '../Utility';
+import { UserInput } from '../Scene/UserInput';
+import { degToRad } from '../Util/Utility';
 import { Entity } from './Entity';
+import { Pickup } from './Pickup';
 
 export class Player extends Entity {
     // placeholder
@@ -14,7 +15,8 @@ export class Player extends Entity {
         this.name = 'player';
         this.origin = origin;
         this.mesh = mesh;
-        this.trans.scale = [0.5, 1.0, 0.5];
+        this.color = [0.86, 0.078, 0.23, 1];
+        // this.trans.scale = [0.5, 0.5, 0.5];
     }
 
     public update(dt: number): void {
@@ -49,5 +51,11 @@ export class Player extends Entity {
         vec3.scale(moveDelta, moveDelta, dt);
         vec3.add(this.trans.pos, moveDelta, this.trans.pos);
 
+    }
+
+    public onPickup(pickup: Pickup): void {
+        // TODO: pickup code
+        pickup.draw = false;
+        pickup.active = false;
     }
 }

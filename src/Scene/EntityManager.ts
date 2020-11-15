@@ -1,10 +1,10 @@
 import { vec3 } from 'gl-matrix';
 import { Mesh } from 'webgl-obj-loader';
-import { Entity } from './Entities/Entity';
-import { Exit } from './Entities/Exit';
-import { Pickup } from './Entities/Pickup';
-import { Player } from './Entities/Player';
-import { Level } from './Level/Level';
+import { Entity } from '../Entities/Entity';
+import { Exit } from '../Entities/Exit';
+import { Pickup } from '../Entities/Pickup';
+import { Player } from '../Entities/Player';
+import { Level } from '../Level/Level';
 import { UserInput } from './UserInput';
 
 export class EntityManager {
@@ -20,7 +20,7 @@ export class EntityManager {
     }
 
     public addPickup(origin: vec3, mesh: Mesh): void {
-        const pu = new Pickup(this.idGenerator++, origin, mesh);
+        const pu = new Pickup(this.idGenerator++, origin, mesh, this.player);
         pu.setScale(0.2, 0.2, 0.2);
         this.entities.push(pu);
     }

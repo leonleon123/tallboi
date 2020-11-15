@@ -1,8 +1,8 @@
 import { mat4, vec3 } from 'gl-matrix';
-import { Player } from './Entities/Player';
-import { Size } from './Interfaces';
+import { Player } from '../Entities/Player';
+import { Size } from '../Util/Interfaces';
+import { degToRad } from '../Util/Utility';
 import { UserInput } from './UserInput';
-import { degToRad } from './Utility';
 
 export class Camera{
     public perspective: mat4;
@@ -15,7 +15,7 @@ export class Camera{
     ) {
         this.perspective = mat4.create();
         // Aspect ratio must not be hardcoded. Get width/height from canvas.
-        mat4.perspective(this.perspective, degToRad(90), this.size.width / this.size.height , 3, 100);
+        mat4.perspective(this.perspective, degToRad(90), this.size.width / this.size.height , 2.5, 100);
     }
 
     update(dt: number, player: Player, input: UserInput): void {
@@ -32,7 +32,7 @@ export class Camera{
             }
             input.mouseDelta[1] = 0;
         }
-        const dist = 4.0;
+        const dist = 5.0;
         const a = Math.sin(degToRad(this.pitch));
         const b = Math.cos(degToRad(this.pitch));
         const c = Math.sin(degToRad(player.trans.angle[1] + 90));
@@ -53,7 +53,7 @@ export class Camera{
 
         this.eye = [
             player.trans.pos[0] - dist * c * b,
-            Math.max(player.trans.pos[1] + dist * a + 1, 0),
+            Math.max(player.trans.pos[1] + dist * a + 2, player.trans.pos[1]),
             player.trans.pos[2] - dist * b * d
         ];
         this.center = [

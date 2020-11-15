@@ -1,7 +1,7 @@
-import { vec3 } from 'gl-matrix';
+import { vec3, vec4 } from 'gl-matrix';
 import { Mesh } from 'webgl-obj-loader';
-import { Transform } from '../Transform';
-import { degToRad } from '../Utility';
+import { Transform } from '../Util/Transform';
+import { degToRad } from '../Util/Utility';
 
 export abstract class Entity {
 
@@ -14,6 +14,7 @@ export abstract class Entity {
     public trans: Transform = new Transform();
     public origin: vec3;
     public vao: WebGLVertexArrayObject;
+    public color: vec4 = [1, 1, 1, 1];
 
     protected constructor(id: number, origin: vec3) {
         this.trans.pos = origin;

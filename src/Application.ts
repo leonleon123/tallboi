@@ -1,13 +1,13 @@
-import { Size } from './Interfaces';
-import { Renderer } from './Renderer';
-import { Scene } from './Scene';
+import { Renderer } from './Render/Renderer';
+import { Scene } from './Scene/Scene';
+import { Size } from './Util/Interfaces';
 
 export default class Application {
 
     private gl: WebGL2RenderingContext;
     private renderer: Renderer;
     private scene: Scene;
-    private size: Size = { width: 1600, height: 900 };
+    private size: Size = { width: 800, height: 800 };
 
     constructor(
         private canvas: HTMLCanvasElement
