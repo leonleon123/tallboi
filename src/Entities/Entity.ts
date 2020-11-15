@@ -1,3 +1,4 @@
+import { Body } from 'cannon';
 import { vec3, vec4 } from 'gl-matrix';
 import { Mesh } from 'webgl-obj-loader';
 import { Transform } from '../Util/Transform';
@@ -15,6 +16,7 @@ export abstract class Entity {
     public origin: vec3;
     public vao: WebGLVertexArrayObject;
     public color: vec4 = [1, 1, 1, 1];
+    public collisionBodies: Body[];
 
     protected constructor(id: number, origin: vec3) {
         this.trans.pos = origin;

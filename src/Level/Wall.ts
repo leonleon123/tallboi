@@ -1,12 +1,14 @@
-import { Mesh } from 'webgl-obj-loader';
+import { vec3 } from 'gl-matrix';
 import { Entity } from '../Entities/Entity';
 
 export class Wall extends Entity {
 
-    constructor(id: number, mesh: Mesh) {
-        super(id, [0, -1, 0]);
+    public halfExtents: vec3;
+
+    constructor(id: number, origin: vec3, halfExtents: vec3) {
+        super(id, origin);
         this.name = 'level';
-        this.mesh = mesh;
+        this.halfExtents = halfExtents;
     }
 
     public update(dt: number): void{

@@ -1,3 +1,4 @@
+import { Body, World } from 'cannon';
 import { vec3 } from 'gl-matrix';
 import { Mesh } from 'webgl-obj-loader';
 import { Entity } from '../Entities/Entity';
@@ -9,13 +10,20 @@ import { UserInput } from './UserInput';
 
 export class EntityManager {
 
-    public entities: Entity[];
+    public entities: Entity[] = [];
     public player: Player;
     public level: Level;
+    public world: World;
     private idGenerator = 0;
 
-    public createPlayerAt(origin: vec3, mesh: Mesh): void {
-        this.player = new Player(this.idGenerator++, origin, mesh, this.userInput);
+    constructor(private userInput: UserInput) {
+        this.world = new World();
+        this.world.gravity.set(0, 0, 0);
+    }
+
+    public createPlayerAt(origin: vec3, mesh: Mesh, collisionBodies: Body[]): void {
+        this.player = new Player(this.idGenerator++, origin, mesh, collisionBodies[0], this.userInput);
+        this.world.addBody(this.player.body);
         this.entities.push(this.player);
     }
 
@@ -30,11 +38,12 @@ export class EntityManager {
         this.entities.push(ex);
     }
 
-    public createLevel(mesh: Mesh): void{
-        this.level = new Level(this.idGenerator++, mesh);
+    public createLevel(mesh: Mesh, collisionBodies: Body[]): void{
+        this.level = new Level(this.idGenerator++, mesh, collisionBodies);
+        for (const body of this.level.collisionBodies){
+            this.world.addBody(body);
+        }
+        console.log(this.world.bodies);
     }
 
-    constructor(private userInput: UserInput) {
-        this.entities = [];
-    }
 }

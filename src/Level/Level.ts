@@ -1,17 +1,16 @@
 
+import { Body } from 'cannon';
 import { Mesh } from 'webgl-obj-loader';
 import { Entity } from '../Entities/Entity';
-import { Wall } from './Wall';
 
 export class Level extends Entity {
 
-    public walls: Wall[];
-
-    constructor(id: number, mesh: Mesh) {
+    constructor(id: number, mesh: Mesh, collisionBodies: Body[]) {
         super(id, [0, 0, 0]);
         this.name = 'level';
         this.mesh = mesh;
-        this.color = [1, 1, 1, 1];
+        this.color = [240 / 256, 198 / 256, 120 / 256, 1];
+        this.collisionBodies = collisionBodies;
     }
 
     public update(dt: number): void{
