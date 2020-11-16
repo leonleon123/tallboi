@@ -60,6 +60,7 @@ export class Scene {
         const now = Date.now();
         const dt = (now - this.lastUpdate) / 1000;
         this.lastUpdate = now;
+        this.preUpdate();
         if (dt <= 0.100) {
             for (const entity of this.entManager.entities) {
                 if (entity.active){
@@ -68,6 +69,12 @@ export class Scene {
             }
             this.camera.update(dt, this.entManager.player, this.userInput);
             this.entManager.world.step(1 / 150, dt); // this makes the movement work the same on any device
+        }
+    }
+
+    private preUpdate(): void {
+        if (this.userInput.onPress('KeyR')){
+            this.entManager.player.reset();
         }
     }
 

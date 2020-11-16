@@ -11,6 +11,7 @@ export class Player extends Entity {
     private speed = 5.0; // maybe start faster and lose speed when larger?
     private height = 1;
     private originalHeight: number;
+    private originalYaw: number;
     // todo: figure out what else
 
     public body: Body;
@@ -22,32 +23,34 @@ export class Player extends Entity {
         super(id, origin);
         this.name = 'player';
         this.origin = origin;
+        this.origin[1] += 0.01;
         this.mesh = mesh;
         this.color = [0.86, 0.078, 0.23, 1];
         this.body = collisionBody;
         this.body.angularDamping = 1;
         const {x, y, z} = (this.body.shapes[0] as any).halfExtents;
         this.originalHeight = y;
-        this.body.position.set(0, 1, 0);
+        this.originalYaw = this.trans.angle[1];
+        this.body.position.set(this.origin[0], this.origin[1], this.origin[2]);
     }
 
     public update(dt: number): void {
         this.body.velocity.set(0, 0, 0);
 
-        if (this.userInput.keysPressed.has('KeyW')) {
+        if (this.userInput.isPressed('KeyW')) {
             this.body.velocity.vadd(new Vec3(this.trans.yawVector[0], 0, this.trans.yawVector[2]), this.body.velocity);
         }
 
-        if (this.userInput.keysPressed.has('KeyS')) {
+        if (this.userInput.isPressed('KeyS')) {
             this.body.velocity.vadd(new Vec3(-this.trans.yawVector[0], 0, -this.trans.yawVector[2]), this.body.velocity);
         }
 
-        if (this.userInput.keysPressed.has('KeyA')) {
+        if (this.userInput.isPressed('KeyA')) {
             const strafeLeft =  new Vec3(Math.cos(degToRad(this.trans.angle[1] + 90)), 0, -Math.sin(degToRad(this.trans.angle[1] + 90)));
             this.body.velocity.vadd(strafeLeft, this.body.velocity);
         }
 
-        if (this.userInput.keysPressed.has('KeyD')) {
+        if (this.userInput.isPressed('KeyD')) {
             const strafeRight = new Vec3(Math.cos(degToRad(this.trans.angle[1] - 90)), 0, -Math.sin(degToRad(this.trans.angle[1] - 90)));
             this.body.velocity.vadd(strafeRight, this.body.velocity);
         }
@@ -59,7 +62,22 @@ export class Player extends Entity {
             this.setYaw(this.trans.angle[1] - this.userInput.mouseDelta[0] * dt * this.userInput.sensitivity);
             this.userInput.mouseDelta[0] = 0;
         }
-        this.trans.pos = [this.body.position.x, this.body.position.y, this.body.position.z];
+        this.setPosition(this.body.position.x, this.body.position.y, this.body.position.z);
+    }
+
+    public reset(): void {
+        this.resetHeight();
+        this.setYaw(this.originalYaw);
+        this.body.position.set(this.origin[0], this.origin[1], this.origin[2]);
+    }
+
+    private resetHeight(): void {
+        const {x, y, z} = (this.body.shapes[0] as any).halfExtents;
+        const scaleRatio = (y  - 0.5) / this.originalHeight;
+        this.body.shapes = [];
+        this.body.addShape(new Box(new Vec3(x, this.originalHeight, z)));
+        this.trans.scale = [1, 1, 1];
+        this.height = 1;
     }
 
     public onPickup(pickup: Pickup): void {
