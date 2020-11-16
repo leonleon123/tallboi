@@ -7,7 +7,7 @@ export default class Application {
     private gl: WebGL2RenderingContext;
     private renderer: Renderer;
     private scene: Scene;
-    private size: Size = { width: 800, height: 800 };
+    private size: Size = { width: 1280, height: 720 };
 
     constructor(
         private canvas: HTMLCanvasElement

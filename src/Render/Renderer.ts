@@ -30,12 +30,6 @@ export class Renderer{
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.enable(this.gl.CULL_FACE);
 
-        for (const entity of scene.entManager.entities){
-            if (!entity.initialized) {
-                this.initEntity(entity);
-            }
-        }
-
         this.uModelView = this.gl.getUniformLocation(this.program, 'uModelView')!;
         this.uProjection = this.gl.getUniformLocation(this.program, 'uProjection')!;
 
@@ -70,6 +64,9 @@ export class Renderer{
         this.renderLevel(scene.entManager.level, scene.camera);
 
         for (const entity of scene.entManager.entities){
+            if (!entity.initialized) {
+                this.initEntity(entity);
+            }
             if (entity.draw) {
                 this.renderEntity(entity, scene.camera);
             }

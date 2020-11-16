@@ -67,8 +67,8 @@ export class Scene {
                 }
             }
             this.camera.update(dt, this.entManager.player, this.userInput);
+            this.entManager.world.step(1 / 150, dt); // this makes the movement work the same on any device
         }
-        this.entManager.world.step(1 / 60);
     }
 
 

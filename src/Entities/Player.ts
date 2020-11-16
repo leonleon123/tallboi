@@ -8,7 +8,7 @@ import { Pickup } from './Pickup';
 
 export class Player extends Entity {
     // placeholder
-    private speed = 5.0;
+    private speed = 5.0; // maybe start faster and lose speed when larger?
     private height = 1;
     private originalHeight: number;
     // todo: figure out what else
