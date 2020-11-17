@@ -1,7 +1,7 @@
 import { mat4 } from 'gl-matrix';
 import { Entity } from '../Entities/Entity';
-import { Level } from '../Level/Level';
 import { Camera } from '../Scene/Camera';
+import { Level } from '../Scene/Level';
 import { Scene } from '../Scene/Scene';
 import { Shader } from '../Util/Interfaces';
 import { degToRad } from '../Util/Utility';

@@ -12,10 +12,8 @@ export class Scene {
     public entManager: EntityManager;
     public camera: Camera;
     public light: Light;
-
     private lastUpdate: number = Date.now();
     private userInput: UserInput;
-    // add map instance here (also create the class)
 
     constructor(
         private size: Size
@@ -25,32 +23,29 @@ export class Scene {
         this.camera = new Camera(this.size);
         this.light = new Light(
             [0, 15, 0], // position
-            1.0, // ambient
-            0.7, // diffuse
-            1.0, // specular
-            20, // shininess
+            0.5, // ambient
+            0.2, // diffuse
+            0, // specular
+            10, // shininess
             [1, 1, 1], // color
-            [1, 0, 0.02] // attenuation
+            [0.6, 0, 0.02] // attenuation
         );
     }
 
     public async loadAssets(): Promise<void> {
         this.entManager.createPlayerAt(
-            [0, 0, 0],
+            [0, 1, 0],
             await loadAsset('player.obj'),
             await loadCollisionBodies('player.obj', BodyType.PLAYER, BodyType.WALL)
         );
 
         const pickupMesh = await loadAsset('cube.obj');
 
-        this.entManager.addPickup([0, 2, 2], pickupMesh);
-        this.entManager.addPickup([2, 2, 0], pickupMesh);
-        this.entManager.addPickup([2, 2, 2], pickupMesh);
-        this.entManager.addPickup([-2, 2, -4], pickupMesh);
+        this.entManager.addPickups(await loadCollisionBodies('pickups.obj', 0, 0), pickupMesh);
 
         this.entManager.createLevel(
-            await loadAsset('map2.obj'),
-            await loadCollisionBodies('map2.obj', BodyType.WALL, BodyType.PLAYER)
+            await loadAsset('map3.obj'),
+            await loadCollisionBodies('map3.obj', BodyType.WALL, BodyType.PLAYER)
         );
     }
 
@@ -66,6 +61,9 @@ export class Scene {
                     entity.update(dt);
                 }
             }
+            this.light.position[0] = this.entManager.player.trans.pos[0];
+            this.light.position[1] = this.entManager.player.trans.pos[1];
+            this.light.position[2] = this.entManager.player.trans.pos[2];
             this.camera.update(dt, this.entManager.player, this.userInput);
             this.entManager.world.step(1 / 150, dt); // this makes the movement work the same on any device
         }

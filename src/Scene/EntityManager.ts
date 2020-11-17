@@ -5,7 +5,7 @@ import { Entity } from '../Entities/Entity';
 import { Exit } from '../Entities/Exit';
 import { Pickup } from '../Entities/Pickup';
 import { Player } from '../Entities/Player';
-import { Level } from '../Level/Level';
+import { Level } from './Level';
 import { UserInput } from './UserInput';
 
 export class EntityManager {
@@ -18,13 +18,22 @@ export class EntityManager {
 
     constructor(private userInput: UserInput) {
         this.world = new World();
-        this.world.gravity.set(0, 0, 0);
+        this.world.gravity.set(0, -100, 0);
+        setTimeout(() => {
+            this.world.gravity.set(0, 0, 0);
+        }, 500);
     }
 
     public createPlayerAt(origin: vec3, mesh: Mesh, collisionBodies: Body[]): void {
         this.player = new Player(this.idGenerator++, origin, mesh, collisionBodies[0], this.userInput);
         this.world.addBody(this.player.body);
         this.entities.push(this.player);
+    }
+
+    public addPickups(bodies: Body[], mesh: Mesh): void{
+        for (const body of bodies){
+            this.addPickup([body.position.x, body.position.y, body.position.z], mesh);
+        }
     }
 
     public addPickup(origin: vec3, mesh: Mesh): void {
@@ -43,7 +52,6 @@ export class EntityManager {
         for (const body of this.level.collisionBodies){
             this.world.addBody(body);
         }
-        console.log(this.world.bodies);
     }
 
 }
