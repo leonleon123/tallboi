@@ -1,4 +1,5 @@
 import { vec3 } from 'gl-matrix';
+import { Player } from '../Entities/Player';
 
 export class Light{
 
@@ -11,4 +12,10 @@ export class Light{
         public color: vec3,
         public attenuation: vec3
     ){ }
+
+    public update(player: Player): void {
+            this.position[0] = player.trans.pos[0];
+            this.position[1] = player.trans.pos[1];
+            this.position[2] = player.trans.pos[2];
+    }
 }

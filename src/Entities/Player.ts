@@ -7,12 +7,10 @@ import { Entity } from './Entity';
 import { Pickup } from './Pickup';
 
 export class Player extends Entity {
-    // placeholder
     private speed = 7.0; // maybe start faster and lose speed when larger?
     private height = 1;
     private originalHeight: number;
     private originalYaw: number;
-    // todo: figure out what else
 
     public body: Body;
 
@@ -72,7 +70,6 @@ export class Player extends Entity {
 
     private resetHeight(): void {
         const {x, y, z} = (this.body.shapes[0] as any).halfExtents;
-        const scaleRatio = (y  - 0.5) / this.originalHeight;
         this.body.shapes = [];
         this.body.addShape(new Box(new Vec3(x, this.originalHeight, z)));
         this.trans.scale = [1, 1, 1];

@@ -14,7 +14,6 @@ export class Camera{
         private size: Size
     ) {
         this.perspective = mat4.create();
-        // Aspect ratio must not be hardcoded. Get width/height from canvas.
         mat4.perspective(this.perspective, degToRad(90), this.size.width / this.size.height , 2.5, 100);
     }
 

@@ -18,10 +18,7 @@ export class EntityManager {
 
     constructor(private userInput: UserInput) {
         this.world = new World();
-        this.world.gravity.set(0, -100, 0);
-        setTimeout(() => {
-            this.world.gravity.set(0, 0, 0);
-        }, 500);
+        this.world.gravity.set(0, 0, 0);
     }
 
     public createPlayerAt(origin: vec3, mesh: Mesh, collisionBodies: Body[]): void {
@@ -51,6 +48,15 @@ export class EntityManager {
         this.level = new Level(this.idGenerator++, mesh, collisionBodies);
         for (const body of this.level.collisionBodies){
             this.world.addBody(body);
+        }
+    }
+
+    public enablePersistant(): void {
+        for (const entity of this.entities) {
+            if (entity.persistant){
+                entity.draw = true;
+                entity.active = true;
+            }
         }
     }
 

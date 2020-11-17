@@ -62,9 +62,7 @@ export class Scene {
                     entity.update(dt);
                 }
             }
-            this.light.position[0] = this.entManager.player.trans.pos[0];
-            this.light.position[1] = this.entManager.player.trans.pos[1];
-            this.light.position[2] = this.entManager.player.trans.pos[2];
+            this.light.update(this.entManager.player);
             this.camera.update(dt, this.entManager.player, this.userInput);
             this.entManager.world.step(1 / 150, dt); // this makes the movement work the same on any device
         }
@@ -73,6 +71,7 @@ export class Scene {
     private preUpdate(): void {
         if (this.userInput.onPress('KeyR')){
             this.entManager.player.reset();
+            this.entManager.enablePersistant();
         }
     }
 

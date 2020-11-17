@@ -10,6 +10,7 @@ export abstract class Entity {
     public mesh: Mesh | null;
     public active = true;
     public draw = true;
+    public persistant = false; // used for entities that are added only at the start of level
     public initialized = false;
     public name = 'none';
     public trans: Transform = new Transform();
