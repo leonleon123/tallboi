@@ -35,17 +35,18 @@ export class Scene {
     public async loadAssets(): Promise<void> {
         this.entManager.createPlayerAt(
             [0, 1, 0],
-            await loadAsset('player.obj'),
-            await loadCollisionBodies('player.obj', BodyType.PLAYER, BodyType.WALL)
+            await loadAsset('player'),
+            await loadCollisionBodies('player', BodyType.PLAYER, BodyType.WALL)
         );
 
-        const pickupMesh = await loadAsset('cube.obj');
-
-        this.entManager.addPickups(await loadCollisionBodies('pickups.obj', 0, 0), pickupMesh);
+        this.entManager.addPickups(
+            await loadAsset('cube'),
+            await loadCollisionBodies('pickups', BodyType.NONE, BodyType.NONE)
+        );
 
         this.entManager.createLevel(
-            await loadAsset('map3.obj'),
-            await loadCollisionBodies('map3.obj', BodyType.WALL, BodyType.PLAYER)
+            await loadAsset('levels/level4'),
+            await loadCollisionBodies('levels/level4_col', BodyType.WALL, BodyType.PLAYER)
         );
     }
 

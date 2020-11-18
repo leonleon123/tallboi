@@ -18,9 +18,11 @@ uniform vec3 uLightAttenuation;
 layout (location = 0) in vec3 aPosition;
 layout (location = 1) in vec4 aColor;
 layout (location = 2) in vec3 aNormal;
+layout (location = 3) in vec2 aTexCoord;
 
 out vec4 vColor;
 out vec3 vLight;
+out vec2 vTexCoord;
 
 void main() {
     vec3 vertexPosition = (uModelView * vec4(aPosition, 1)).xyz;
@@ -42,6 +44,8 @@ void main() {
 
     vLight = ((ambient + diffuse + specular) * attenuation) * uLightColor;
     vColor = aColor;
+    vTexCoord = aTexCoord;
+
     gl_Position = uProjection * vec4(vertexPosition, 1);
 }
 `;
@@ -51,13 +55,19 @@ export const fragment =
 
 precision mediump float;
 
+uniform mediump sampler2D uTexture;
+uniform vec2 uTexScale;
+uniform vec2 uTexOffset;
+
 in vec4 vColor;
 in vec3 vLight;
+in vec2 vTexCoord;
 
 out vec4 oColor;
 
 void main() {
-    oColor = vColor * vec4(vLight, 1) + vColor * vec4(0.5, 0.5, 0.5, 1);
+    oColor = (vColor * vec4(vLight, 1) + vColor * vec4(0.1, 0.1, 0.1, 1)) * texture(uTexture, vTexCoord * uTexScale + uTexOffset);
+    // oColor = texture(uTexture, vTexCoord * vec2(6,6)) * vec4(vLight, 1) ;
 }
 `;
 

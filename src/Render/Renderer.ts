@@ -3,7 +3,7 @@ import { Entity } from '../Entities/Entity';
 import { Camera } from '../Scene/Camera';
 import { Level } from '../Scene/Level';
 import { Scene } from '../Scene/Scene';
-import { Shader } from '../Util/Interfaces';
+import { MaterialRenderInfo, Shader } from '../Util/Interfaces';
 import { degToRad } from '../Util/Utility';
 import { simpleShader } from './Shaders';
 
@@ -19,6 +19,9 @@ export class Renderer{
     private uLightPosition: WebGLUniformLocation;
     private uLightColor: WebGLUniformLocation;
     private uLightAttenuation: WebGLUniformLocation;
+    private uTexture: WebGLUniformLocation;
+    private uTexScale: WebGLUniformLocation;
+    private uTexOffset: WebGLUniformLocation;
 
     constructor(
         private gl: WebGL2RenderingContext
@@ -41,7 +44,9 @@ export class Renderer{
         this.uLightPosition = this.gl.getUniformLocation(this.program, 'uLightPosition')!;
         this.uLightColor = this.gl.getUniformLocation(this.program, 'uLightColor')!;
         this.uLightAttenuation = this.gl.getUniformLocation(this.program, 'uLightAttenuation')!;
-
+        this.uTexture = this.gl.getUniformLocation(this.program, 'uTexture')!;
+        this.uTexScale = this.gl.getUniformLocation(this.program, 'uTexScale')!;
+        this.uTexOffset = this.gl.getUniformLocation(this.program, 'uTexOffset')!;
     }
 
     public renderScene(scene: Scene): void{
@@ -74,46 +79,102 @@ export class Renderer{
     }
 
     public initEntity(entity: Entity): void{
-        const vao = this.gl.createVertexArray();
-        this.gl.bindVertexArray(vao);
+        for (let i = 0; i < entity.mesh?.materialNames.length!; i++){
 
-        const vertexBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(entity.mesh?.vertices!), this.gl.STATIC_DRAW);
+            const vao = this.gl.createVertexArray();
 
-        const indexBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-        this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(entity.mesh?.indices!), this.gl.STATIC_DRAW);
+            this.gl.bindVertexArray(vao);
 
-        this.gl.enableVertexAttribArray(0);
-        this.gl.vertexAttribPointer(0, 3, this.gl.FLOAT, false, 0, 0 );
+            const vertexBuffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(entity.mesh?.vertices!), this.gl.STATIC_DRAW);
 
-        const n = entity.mesh?.vertices.length! / 3;
-        const colors = Array(n).fill(0).map(e => entity.color as Array<number>).reduce((a, b) => [...a, ...b]);
-        const colorBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
+            const indexBuffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
-        this.gl.enableVertexAttribArray(1);
-        this.gl.vertexAttribPointer(1, 4, this.gl.FLOAT, false, 0, 0 );
+            const materialIndices = entity.mesh?.indicesPerMaterial[i]!;
+            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(materialIndices), this.gl.STATIC_DRAW);
 
-        const normalBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(entity.mesh?.vertexNormals!), this.gl.STATIC_DRAW);
+            this.gl.enableVertexAttribArray(0);
+            this.gl.vertexAttribPointer(0, 3, this.gl.FLOAT, false, 0, 0 );
 
-        this.gl.enableVertexAttribArray(2);
-        this.gl.vertexAttribPointer(2, 3, this.gl.FLOAT, false, 0, 0);
+            const n = entity.mesh?.vertices.length! / 3;
+            const colors = Array(n).fill(0).map(e => entity.color as Array<number>).reduce((a, b) => [...a, ...b]);
+            const colorBuffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, colorBuffer);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(colors), this.gl.STATIC_DRAW);
 
-        entity.vao = vao!;
+            this.gl.enableVertexAttribArray(1);
+            this.gl.vertexAttribPointer(1, 4, this.gl.FLOAT, false, 0, 0 );
+
+            const normalBuffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalBuffer);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(entity.mesh?.vertexNormals!), this.gl.STATIC_DRAW);
+
+            this.gl.enableVertexAttribArray(2);
+            this.gl.vertexAttribPointer(2, 3, this.gl.FLOAT, false, 0, 0);
+
+            const textureCoordBuffer = this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, textureCoordBuffer);
+            this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(entity.mesh?.textures!), this.gl.STATIC_DRAW);
+
+            this.gl.enableVertexAttribArray(3);
+            this.gl.vertexAttribPointer(3, 2, this.gl.FLOAT, false, 0, 0);
+
+            const texture = this.gl.createTexture()!;
+            this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+            this.gl.texImage2D(
+                this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, new Uint8Array([255, 0, 0, 255])
+            );
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.REPEAT);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.REPEAT);
+            const image = new Image();
+            image.addEventListener('load', () => {
+                this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+                this.gl.texImage2D(
+                    this.gl.TEXTURE_2D,
+                    0,
+                    this.gl.RGBA,
+                    this.gl.RGBA,
+                    this.gl.UNSIGNED_BYTE,
+                    image
+                );
+            });
+            image.src = `assets/textures/${entity.mesh?.materialsByIndex[i].mapDiffuse.filename}`;
+
+            const materialRenderInfo: MaterialRenderInfo = {
+                vao: vao!,
+                texture,
+                materialIndices,
+                material: entity.mesh?.materialsByIndex[i]!
+            };
+            entity.materialRenderInfos.push(materialRenderInfo);
+        }
+
         entity.initialized = true;
-
     }
 
     public renderEntity(entity: Entity, camera: Camera): void{
-        this.gl.bindVertexArray(entity.vao);
-        this.gl.uniformMatrix4fv(this.uModelView, false, this.getModelView(entity));
-        this.gl.uniformMatrix4fv(this.uProjection, false, this.getProjection(camera));
-        this.gl.drawElements(this.gl.TRIANGLES, entity.mesh?.indices.length!, this.gl.UNSIGNED_SHORT, 0);
+        for (const materialInfo of entity.materialRenderInfos){
+            this.gl.bindVertexArray(materialInfo.vao);
+
+            this.gl.uniformMatrix4fv(this.uModelView, false, this.getModelView(entity));
+            this.gl.uniformMatrix4fv(this.uProjection, false, this.getProjection(camera));
+            const texScale = [materialInfo.material.mapDiffuse.scale.u, materialInfo.material.mapDiffuse.scale.v];
+            const texOffset = [materialInfo.material.mapDiffuse.offset.u, materialInfo.material.mapDiffuse.offset.v];
+            this.gl.uniform2fv(this.uTexScale, texScale);
+            this.gl.uniform2fv(this.uTexOffset, texOffset);
+
+            this.gl.activeTexture(this.gl.TEXTURE0);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, materialInfo.texture);
+            this.gl.uniform1i(this.uTexture, 0);
+
+            this.gl.drawElements(this.gl.TRIANGLES, materialInfo.materialIndices.length, this.gl.UNSIGNED_SHORT, 0);
+        }
     }
 
     private initLevel(level: Level): void{

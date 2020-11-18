@@ -1,6 +1,6 @@
 import { Body, Box, Vec3 } from 'cannon';
 import { vec3 } from 'gl-matrix';
-import { Mesh } from 'webgl-obj-loader';
+import { MaterialLibrary, Mesh } from 'webgl-obj-loader';
 import { BodyType } from './Enums';
 
 export function degToRad(degrees: number): number {
@@ -9,14 +9,17 @@ export function degToRad(degrees: number): number {
 }
 
 export async function loadAsset(file: string): Promise<Mesh> {
-    const req = await fetch(`assets/${file}`);
+    const req = await fetch(`assets/meshes/${file}.obj`);
     const text = await req.text();
     const mesh = new Mesh(text);
+    const mtl = await fetch(`assets/meshes/${file}.mtl`);
+    const mtlText = await mtl.text();
+    mesh.addMaterialLibrary(new MaterialLibrary(mtlText));
     return new Promise((resolve, reject) => resolve(mesh));
 }
 
 export async function loadCollisionBodies(file: string, group: number, filter: number): Promise<Body[]>{
-    const req = await fetch(`assets/${file}`);
+    const req = await fetch(`assets/meshes/${file}.obj`);
     const text = await req.text();
     const bodies = text.split(/^o.*$/gm)
     .filter(block => !block.startsWith('#'))

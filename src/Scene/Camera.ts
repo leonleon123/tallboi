@@ -14,7 +14,7 @@ export class Camera{
         private size: Size
     ) {
         this.perspective = mat4.create();
-        mat4.perspective(this.perspective, degToRad(90), this.size.width / this.size.height , 2.5, 100);
+        mat4.perspective(this.perspective, degToRad(90), this.size.width / this.size.height , 1, 100);
     }
 
     update(dt: number, player: Player, input: UserInput): void {

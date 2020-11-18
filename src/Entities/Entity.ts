@@ -1,6 +1,7 @@
 import { Body } from 'cannon';
 import { vec3, vec4 } from 'gl-matrix';
 import { Mesh } from 'webgl-obj-loader';
+import { MaterialRenderInfo } from '../Util/Interfaces';
 import { Transform } from '../Util/Transform';
 import { degToRad } from '../Util/Utility';
 
@@ -15,7 +16,7 @@ export abstract class Entity {
     public name = 'none';
     public trans: Transform = new Transform();
     public origin: vec3;
-    public vao: WebGLVertexArrayObject;
+    public materialRenderInfos: MaterialRenderInfo[] = [];
     public color: vec4 = [1, 1, 1, 1];
     public collisionBodies: Body[];
 

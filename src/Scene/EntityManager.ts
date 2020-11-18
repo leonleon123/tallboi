@@ -27,8 +27,8 @@ export class EntityManager {
         this.entities.push(this.player);
     }
 
-    public addPickups(bodies: Body[], mesh: Mesh): void{
-        for (const body of bodies){
+    public addPickups(mesh: Mesh, collisionBodies: Body[]): void{
+        for (const body of collisionBodies){
             this.addPickup([body.position.x, body.position.y, body.position.z], mesh);
         }
     }

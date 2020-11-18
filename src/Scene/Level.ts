@@ -9,7 +9,7 @@ export class Level extends Entity {
         super(id, [0, 0, 0]);
         this.name = 'level';
         this.mesh = mesh;
-        this.color = [240 / 256, 198 / 256, 120 / 256, 1];
+        // this.color = [240 / 256, 198 / 256, 120 / 256, 1];
         this.collisionBodies = collisionBodies;
     }
 

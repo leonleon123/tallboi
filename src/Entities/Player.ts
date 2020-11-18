@@ -23,7 +23,7 @@ export class Player extends Entity {
         this.origin = origin;
         this.origin[1] += 0.01;
         this.mesh = mesh;
-        this.color = [0.86, 0.078, 0.23, 1];
+        // this.color = [0.86, 0.078, 0.23, 1];
         this.body = collisionBody;
         this.body.angularDamping = 1;
         this.originalHeight = (this.body.shapes[0] as any).halfExtents.y;

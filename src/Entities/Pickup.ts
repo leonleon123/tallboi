@@ -16,7 +16,7 @@ export class Pickup extends Entity {
         this.name = 'pickup';
         this.origin = origin;
         this.mesh = mesh;
-        this.color = [0.4, 0.2, 0.6, 1];
+        // this.color = [0.4, 0.2, 0.6, 1];
         this.persistant = true;
         this.setYaw(this.randomOffset * 360 - 180);
     }
