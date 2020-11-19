@@ -24,7 +24,8 @@ export class Renderer{
     private uTexOffset: WebGLUniformLocation;
 
     constructor(
-        private gl: WebGL2RenderingContext
+        private gl: WebGL2RenderingContext,
+        private text: CanvasRenderingContext2D
     ) { }
 
     public initScene(scene: Scene): void{
@@ -51,10 +52,8 @@ export class Renderer{
 
     public renderScene(scene: Scene): void{
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-        this.gl.clearColor(240 / 256, 198 / 256, 120 / 256, 1);
-        // I added this because i saw it somewhere. Do we need it? Also we need to get rid of hardcoding 600 600.
-        // this.gl.viewport(0, 0, 600, 600);
-
+        this.gl.clearColor(scene.entManager.level.bkgColor[0], scene.entManager.level.bkgColor[1], scene.entManager.level.bkgColor[2], 1);
+        this.text.clearRect(0, 0, this.text.canvas.width, this.text.canvas.height);
         this.gl.useProgram(this.program);
 
         this.gl.uniform1f(this.uDiffuse, scene.light.diffuse);
@@ -66,16 +65,20 @@ export class Renderer{
         this.gl.uniform3fv(this.uLightColor, scene.light.color);
         this.gl.uniform3fv(this.uLightAttenuation, scene.light.attenuation);
 
+
         this.renderLevel(scene.entManager.level, scene.camera);
 
         for (const entity of scene.entManager.entities){
             if (!entity.initialized) {
                 this.initEntity(entity);
             }
-            if (entity.draw) {
+            if (entity.draw && scene.entManager.level.ready) {
                 this.renderEntity(entity, scene.camera);
             }
         }
+
+        this.renderText(scene);
+
     }
 
     public initEntity(entity: Entity): void{
@@ -143,14 +146,27 @@ export class Renderer{
                     this.gl.UNSIGNED_BYTE,
                     image
                 );
+                entity.materialRenderInfos[i].textureLoaded = true;
+                if (entity instanceof Level)
+                {
+                    entity.check = true;
+                }
+                // console.log('texture loaded for: ' + entity.name);
+            });
+            image.addEventListener('error', () => {
+                entity.materialRenderInfos[i].textureLoaded = true;
+                console.log('Warning: texture failed to load for: ' + entity.name + '. Material name: ' + entity.mesh?.materialNames[i]);
+                console.log('Texture name: ' + image.src);
             });
             image.src = `assets/textures/${entity.mesh?.materialsByIndex[i].mapDiffuse.filename}`;
+            // console.log(image.src);
 
             const materialRenderInfo: MaterialRenderInfo = {
                 vao: vao!,
                 texture,
                 materialIndices,
-                material: entity.mesh?.materialsByIndex[i]!
+                material: entity.mesh?.materialsByIndex[i]!,
+                textureLoaded: false
             };
             entity.materialRenderInfos.push(materialRenderInfo);
         }
@@ -179,10 +195,26 @@ export class Renderer{
 
     private initLevel(level: Level): void{
         this.initEntity(level);
+        level.initialized = true;
     }
 
     private renderLevel(level: Level, camera: Camera): void{
-        this.renderEntity(level, camera);
+        if (level.initialized && level.ready){
+            this.renderEntity(level, camera);
+        }
+        if (!level.initialized){
+            this.initLevel(level);
+        }
+
+    }
+
+    private renderText(scene: Scene): void{
+        if (!scene.entManager.level.ready){
+            const x = this.text.canvas.width / 2 - this.text.measureText('Loading').width / 2;
+            const y = this.text.canvas.height / 2;
+            this.text.font = '30px Arial';
+            this.text.fillText('Loading...', x , y);
+        }
     }
 
     private buildProgram(shader: Shader): void{

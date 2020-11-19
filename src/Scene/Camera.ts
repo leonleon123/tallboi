@@ -8,7 +8,8 @@ export class Camera{
     public perspective: mat4;
     public eye: vec3 = vec3.create();
     public center: vec3 = vec3.create();
-    public pitch = 45;
+    public defaultPitch = 45;
+    public pitch = this.defaultPitch;
 
     constructor(
         private size: Size

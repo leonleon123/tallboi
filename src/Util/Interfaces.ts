@@ -15,4 +15,5 @@ export interface MaterialRenderInfo{
     texture: WebGLTexture;
     materialIndices: number[];
     material: Material;
+    textureLoaded: boolean;
 }

@@ -37,8 +37,7 @@ export class Player extends Entity {
         if (this.userInput.isPressed('KeyW')) {
             this.body.velocity.vadd(new Vec3(this.trans.yawVector[0], 0, this.trans.yawVector[2]), this.body.velocity);
         }
-
-        if (this.userInput.isPressed('KeyS')) {
+        else if (this.userInput.isPressed('KeyS')) {
             this.body.velocity.vadd(new Vec3(-this.trans.yawVector[0], 0, -this.trans.yawVector[2]), this.body.velocity);
         }
 
@@ -46,8 +45,7 @@ export class Player extends Entity {
             const strafeLeft =  new Vec3(Math.cos(degToRad(this.trans.angle[1] + 90)), 0, -Math.sin(degToRad(this.trans.angle[1] + 90)));
             this.body.velocity.vadd(strafeLeft, this.body.velocity);
         }
-
-        if (this.userInput.isPressed('KeyD')) {
+        else if (this.userInput.isPressed('KeyD')) {
             const strafeRight = new Vec3(Math.cos(degToRad(this.trans.angle[1] - 90)), 0, -Math.sin(degToRad(this.trans.angle[1] - 90)));
             this.body.velocity.vadd(strafeRight, this.body.velocity);
         }

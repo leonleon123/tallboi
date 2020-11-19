@@ -5,3 +5,14 @@ html, body{
     align-items: center;
     margin: 0;
 }
+
+.container {
+    position: relative;
+}
+ 
+#text {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 10;
+}

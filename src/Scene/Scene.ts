@@ -1,3 +1,4 @@
+import { World } from 'cannon';
 import { BodyType } from '../Util/Enums';
 import { Size } from '../Util/Interfaces';
 import { loadAsset, loadCollisionBodies } from '../Util/Utility';
@@ -14,6 +15,9 @@ export class Scene {
     public light: Light;
     private lastUpdate: number = Date.now();
     private userInput: UserInput;
+
+    public levelOrder = ['level4', 'level3'];
+    public currentLevel = 0;
 
     constructor(
         private size: Size
@@ -32,7 +36,15 @@ export class Scene {
         );
     }
 
-    public async loadAssets(): Promise<void> {
+    public async loadLevel(levelName: string): Promise<void> {
+        console.log('Loading level ' + levelName);
+        if (this.entManager.level !== undefined)
+        {
+            this.entManager.level.ready = false;
+        }
+        this.entManager.entities = [];
+        this.entManager.world = new World();
+        this.entManager.world.gravity.set(0, 0, 0);
         this.entManager.createPlayerAt(
             [0, 1, 0],
             await loadAsset('player'),
@@ -41,13 +53,22 @@ export class Scene {
 
         this.entManager.addPickups(
             await loadAsset('cube'),
-            await loadCollisionBodies('pickups', BodyType.NONE, BodyType.NONE)
+            await loadCollisionBodies('levels/' + levelName + '_pickups', BodyType.NONE, BodyType.NONE)
         );
-
         this.entManager.createLevel(
-            await loadAsset('levels/level4'),
-            await loadCollisionBodies('levels/level4_col', BodyType.WALL, BodyType.PLAYER)
+            await loadAsset('levels/' + levelName),
+            await loadCollisionBodies('levels/' + levelName + '_col', BodyType.WALL, BodyType.PLAYER)
         );
+        this.camera.pitch = this.camera.defaultPitch;
+    }
+
+    public loadNextLevel(): void{
+        this.currentLevel++;
+        if (this.currentLevel >= this.levelOrder.length)
+        {
+            this.currentLevel = 0;
+        }
+        this.loadLevel(this.levelOrder[this.currentLevel]);
     }
 
     public update(): void {
@@ -57,7 +78,7 @@ export class Scene {
         const dt = (now - this.lastUpdate) / 1000;
         this.lastUpdate = now;
         this.preUpdate();
-        if (dt <= 0.100) {
+        if (dt <= 0.100 && this.entManager.level.ready) {
             for (const entity of this.entManager.entities) {
                 if (entity.active){
                     entity.update(dt);
@@ -70,9 +91,31 @@ export class Scene {
     }
 
     private preUpdate(): void {
+        if (!this.entManager.level.ready && this.entManager.level.check) {
+            const len = this.entManager.level.mesh?.materialNames.length!;
+            // console.log(len);
+            if (len > 0 && len === this.entManager.level.materialRenderInfos.length) {
+                let loaded = true;
+                for (const it of this.entManager.level.materialRenderInfos) {
+                    if (it.textureLoaded === false) {
+                        loaded = false;
+                    }
+                }
+                if (loaded) {
+                    this.entManager.level.ready = true;
+                    this.entManager.level.check = false;
+                    // console.log('ready');
+                }
+            }
+        }
+
         if (this.userInput.onPress('KeyR')){
             this.entManager.player.reset();
+            this.camera.pitch = this.camera.defaultPitch;
             this.entManager.enablePersistant();
+        }
+        if (this.userInput.onPress('KeyP')){
+            this.loadNextLevel();
         }
     }
 
