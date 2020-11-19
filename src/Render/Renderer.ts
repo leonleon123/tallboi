@@ -82,6 +82,7 @@ export class Renderer{
     }
 
     public initEntity(entity: Entity): void{
+        entity.materialRenderInfos = [];
         for (let i = 0; i < entity.mesh?.materialNames.length!; i++){
 
             const vao = this.gl.createVertexArray();
@@ -159,7 +160,7 @@ export class Renderer{
                 console.log('Texture name: ' + image.src);
             });
             image.src = `assets/textures/${entity.mesh?.materialsByIndex[i].mapDiffuse.filename}`;
-            // console.log(image.src);
+            console.log('inited: ' + entity.name);
 
             const materialRenderInfo: MaterialRenderInfo = {
                 vao: vao!,
@@ -210,10 +211,21 @@ export class Renderer{
 
     private renderText(scene: Scene): void{
         if (!scene.entManager.level.ready){
+            this.text.font = '30px Arial';
             const x = this.text.canvas.width / 2 - this.text.measureText('Loading').width / 2;
             const y = this.text.canvas.height / 2;
-            this.text.font = '30px Arial';
             this.text.fillText('Loading...', x , y);
+        }
+        else
+        {
+            if (scene.entManager.player.drawLoc)
+            {
+                this.text.font = '15px Arial';
+                this.text.fillStyle = 'yellow';
+                this.text.fillText('X: ' + scene.entManager.player.trans.pos[0].toFixed(2), 0, 15);
+                this.text.fillText('Y: ' + scene.entManager.player.trans.pos[1].toFixed(2), 0, 35);
+                this.text.fillText('Z: ' + scene.entManager.player.trans.pos[2].toFixed(2), 0, 55);
+            }
         }
     }
 

@@ -2,6 +2,7 @@ import { Body, Box, Vec3 } from 'cannon';
 import { vec3 } from 'gl-matrix';
 import { MaterialLibrary, Mesh } from 'webgl-obj-loader';
 import { BodyType } from './Enums';
+import { LevelData } from './Interfaces';
 
 export function degToRad(degrees: number): number {
     const pi = Math.PI;
@@ -72,4 +73,42 @@ export function getBodyFromVertices(vertices: vec3[], group: BodyType, filter: B
     body.position.set(center[0], center[1], center[2]);
 
     return body;
+}
+
+export async function loadLevelData(levelName: string): Promise<LevelData>{
+    const req = await fetch(`assets/data/${levelName}.data`);
+    const data = await req.text();
+    console.log(data);
+    const lines = data.split('\n');
+    const spawnPoint = vec3.create();
+    const dExitOrigins: Array<vec3> = [];
+
+    let dExitSize = 0;
+    for (const line of lines)
+    {
+        const tokens = line.split(' ');
+        if (tokens[0] === 'spawn')
+        {
+            vec3.set(spawnPoint, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+            console.log('aaa');
+        }
+        else if (tokens[0] === 'exit_size')
+        {
+            dExitSize = parseInt(tokens[1], 10);
+            console.log('setting exit size');
+        }
+        else if (tokens[0] === 'exit')
+        {
+            const dExitOrigin = vec3.create();
+            vec3.set(dExitOrigin, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+            dExitOrigins.push(dExitOrigin);
+            console.log('adding exit');
+        }
+    }
+    const ret: LevelData = {
+        spawn: spawnPoint,
+        exitSize: dExitSize,
+        exitOrigins: dExitOrigins
+    };
+    return ret;
 }

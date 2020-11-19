@@ -1,3 +1,4 @@
+import { vec3 } from 'gl-matrix';
 import { Material } from 'webgl-obj-loader';
 
 export interface Shader{
@@ -16,4 +17,10 @@ export interface MaterialRenderInfo{
     materialIndices: number[];
     material: Material;
     textureLoaded: boolean;
+}
+
+export interface LevelData{
+    spawn: vec3;
+    exitSize: number;
+    exitOrigins: Array<vec3>;
 }

@@ -8,9 +8,11 @@ import { Pickup } from './Pickup';
 
 export class Player extends Entity {
     private speed = 7.0; // maybe start faster and lose speed when larger?
-    private height = 1;
+    public height = 0;
     private originalHeight: number;
     private originalYaw: number;
+    public drawLoc = false;
+    public exited = false;
 
     public body: Body;
 
@@ -57,6 +59,11 @@ export class Player extends Entity {
             this.setYaw(this.trans.angle[1] - this.userInput.mouseDelta[0] * dt * this.userInput.sensitivity);
             this.userInput.mouseDelta[0] = 0;
         }
+
+        if (this.userInput.onPress('KeyN')){
+            this.drawLoc = !this.drawLoc;
+        }
+
         this.setPosition(this.body.position.x, this.body.position.y, this.body.position.z);
     }
 
@@ -71,7 +78,7 @@ export class Player extends Entity {
         this.body.shapes = [];
         this.body.addShape(new Box(new Vec3(x, this.originalHeight, z)));
         this.trans.scale = [1, 1, 1];
-        this.height = 1;
+        this.height = 0;
     }
 
     public onPickup(pickup: Pickup): void {

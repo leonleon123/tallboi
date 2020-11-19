@@ -1,7 +1,7 @@
 import { World } from 'cannon';
 import { BodyType } from '../Util/Enums';
 import { Size } from '../Util/Interfaces';
-import { loadAsset, loadCollisionBodies } from '../Util/Utility';
+import { loadAsset, loadCollisionBodies, loadLevelData } from '../Util/Utility';
 import { Camera } from './Camera';
 import { EntityManager } from './EntityManager';
 import { Light } from './Light';
@@ -45,8 +45,9 @@ export class Scene {
         this.entManager.entities = [];
         this.entManager.world = new World();
         this.entManager.world.gravity.set(0, 0, 0);
+        const data = await loadLevelData(levelName);
         this.entManager.createPlayerAt(
-            [0, 1, 0],
+            data.spawn,
             await loadAsset('player'),
             await loadCollisionBodies('player', BodyType.PLAYER, BodyType.WALL)
         );
@@ -55,6 +56,10 @@ export class Scene {
             await loadAsset('cube'),
             await loadCollisionBodies('levels/' + levelName + '_pickups', BodyType.NONE, BodyType.NONE)
         );
+        if (data.exitOrigins.length > 0){
+            this.entManager.createExitAt(await loadAsset('exit'), data.exitOrigins[0], data.exitSize);
+        }
+
         this.entManager.createLevel(
             await loadAsset('levels/' + levelName),
             await loadCollisionBodies('levels/' + levelName + '_col', BodyType.WALL, BodyType.PLAYER)
@@ -107,6 +112,11 @@ export class Scene {
                     // console.log('ready');
                 }
             }
+        }
+
+        if (this.entManager.player.exited){
+            this.loadNextLevel();
+            this.entManager.player.exited = false;
         }
 
         if (this.userInput.onPress('KeyR')){
