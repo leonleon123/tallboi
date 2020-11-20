@@ -91,7 +91,12 @@ export class Scene {
             }
             this.light.update(this.entManager.player);
             this.camera.update(dt, this.entManager.player, this.userInput);
-            this.entManager.world.step(dt); // this makes the movement work the same on any device
+            if (dt > 0.017){
+                this.entManager.world.step(1 / 60, dt);
+            }
+            else{
+                this.entManager.world.step(dt);
+            }
         }
     }
 
