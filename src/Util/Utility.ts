@@ -2,7 +2,7 @@ import { Body, Box, Vec3 } from 'cannon';
 import { vec3 } from 'gl-matrix';
 import { MaterialLibrary, Mesh } from 'webgl-obj-loader';
 import { BodyType } from './Enums';
-import { LevelData } from './Interfaces';
+import { LevelData, WarpInfo } from './Interfaces';
 
 export function degToRad(degrees: number): number {
     const pi = Math.PI;
@@ -82,33 +82,50 @@ export async function loadLevelData(levelName: string): Promise<LevelData>{
     const lines = data.split('\n');
     const spawnPoint = vec3.create();
     const dExitOrigins: Array<vec3> = [];
+    const dWarps: Array<WarpInfo> = [];
 
     let dExitSize = 0;
+    let dSpawnYaw = 0;
     for (const line of lines)
     {
         const tokens = line.split(' ');
         if (tokens[0] === 'spawn')
         {
             vec3.set(spawnPoint, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
-            console.log('aaa');
+            if (tokens[4] !== undefined && parseFloat(tokens[4])){
+                dSpawnYaw = parseFloat(tokens[4]);
+                console.log('setting custom yaw');
+            }
         }
         else if (tokens[0] === 'exit_size')
         {
             dExitSize = parseInt(tokens[1], 10);
-            console.log('setting exit size');
+            // console.log('setting exit size');
         }
         else if (tokens[0] === 'exit')
         {
             const dExitOrigin = vec3.create();
             vec3.set(dExitOrigin, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
             dExitOrigins.push(dExitOrigin);
-            console.log('adding exit');
+            // console.log('adding exit');
+        }
+        else if (tokens[0] === 'warp')
+        {
+            const dWarpOrigin = vec3.create();
+            vec3.set(dWarpOrigin, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+            const warpInfo: WarpInfo = {
+                origin: dWarpOrigin,
+                to: tokens[4]
+            };
+            dWarps.push(warpInfo);
         }
     }
     const ret: LevelData = {
         spawn: spawnPoint,
+        spawnYaw: dSpawnYaw,
         exitSize: dExitSize,
-        exitOrigins: dExitOrigins
+        exitOrigins: dExitOrigins,
+        warps: dWarps
     };
     return ret;
 }

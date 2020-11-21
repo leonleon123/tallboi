@@ -21,8 +21,8 @@ export class EntityManager {
         this.world.gravity.set(0, 0, 0);
     }
 
-    public createPlayerAt(origin: vec3, mesh: Mesh, collisionBodies: Body[]): void {
-        this.player = new Player(this.idGenerator++, origin, mesh, collisionBodies[0], this.userInput);
+    public createPlayerAt(origin: vec3, originalYaw: number, mesh: Mesh, collisionBodies: Body[]): void {
+        this.player = new Player(this.idGenerator++, origin, originalYaw, mesh, collisionBodies[0], this.userInput);
         this.world.addBody(this.player.body);
         this.entities.push(this.player);
     }

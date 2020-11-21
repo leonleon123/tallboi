@@ -48,6 +48,7 @@ export class Scene {
         const data = await loadLevelData(levelName);
         this.entManager.createPlayerAt(
             data.spawn,
+            data.spawnYaw,
             await loadAsset('player'),
             await loadCollisionBodies('player', BodyType.PLAYER, BodyType.WALL)
         );
@@ -56,8 +57,9 @@ export class Scene {
             await loadAsset('cube'),
             await loadCollisionBodies('levels/' + levelName + '_pickups', BodyType.NONE, BodyType.NONE)
         );
-        if (data.exitOrigins.length > 0){
-            this.entManager.createExitAt(await loadAsset('exit'), data.exitOrigins[0], data.exitSize);
+
+        for (const origin of data.exitOrigins){
+            this.entManager.createExitAt(await loadAsset('exit'), origin, data.exitSize);
         }
 
         this.entManager.createLevel(

@@ -21,6 +21,13 @@ export interface MaterialRenderInfo{
 
 export interface LevelData{
     spawn: vec3;
+    spawnYaw: number;
     exitSize: number;
     exitOrigins: Array<vec3>;
+    warps: Array<WarpInfo>;
+}
+
+export interface WarpInfo{
+    origin: vec3;
+    to: string;
 }
