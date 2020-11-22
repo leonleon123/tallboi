@@ -1,5 +1,5 @@
 import { Body } from 'cannon';
-import { vec3, vec4 } from 'gl-matrix';
+import { mat4, vec3, vec4 } from 'gl-matrix';
 import { Mesh } from 'webgl-obj-loader';
 import { MaterialRenderInfo } from '../Util/Interfaces';
 import { Transform } from '../Util/Transform';
@@ -79,4 +79,16 @@ export abstract class Entity {
     }
 
     abstract update(dt: number): void;
+
+    public getModelView(): mat4{
+        // entity
+        const M: mat4 = mat4.create();
+        mat4.translate(M , M, this.trans.pos);
+        mat4.rotateX(M, M, degToRad(this.trans.angle[0]));
+        mat4.rotateY(M, M, degToRad(this.trans.angle[1]));
+        mat4.rotateZ(M, M, degToRad(this.trans.angle[2]));
+        mat4.scale(M, M, this.trans.scale);
+
+        return M;
+    }
 }

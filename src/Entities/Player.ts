@@ -2,8 +2,11 @@ import { Body, Box, Vec3 } from 'cannon';
 import { vec3 } from 'gl-matrix';
 import { Mesh } from 'webgl-obj-loader';
 import { UserInput } from '../Scene/UserInput';
+import { PlayerState } from '../Util/Enums';
 import { degToRad } from '../Util/Utility';
+import { Arm } from './Arm';
 import { Entity } from './Entity';
+import { Leg } from './Leg';
 import { Pickup } from './Pickup';
 
 export class Player extends Entity {
@@ -13,11 +16,13 @@ export class Player extends Entity {
     private originalYaw: number;
     public drawLoc = false;
     public exited = false;
-
+    public arms: Arm[];
+    public legs: Leg[];
     public body: Body;
+    public state: PlayerState = PlayerState.STILL;
 
     constructor(
-        id: number, origin: vec3, mesh: Mesh, collisionBody: Body,
+        id: number, origin: vec3, mesh: Mesh, collisionBody: Body, arms: Mesh[], legs: Mesh[],
         private userInput: UserInput,
     ) {
         super(id, origin);
@@ -31,6 +36,9 @@ export class Player extends Entity {
         this.originalHeight = (this.body.shapes[0] as any).halfExtents.y;
         this.originalYaw = this.trans.angle[1];
         this.body.position.set(this.origin[0], this.origin[1], this.origin[2]);
+        this.arms = arms.map((armMesh, i) => new Arm(armMesh, i * Math.PI, this));
+        this.legs = legs.map((legMesh, i) => new Leg(legMesh, i * Math.PI, this));
+
     }
 
     public update(dt: number): void {
@@ -52,8 +60,14 @@ export class Player extends Entity {
             this.body.velocity.vadd(strafeRight, this.body.velocity);
         }
 
+        if (this.userInput.onPress('KeyF')){
+            this.onPickup({} as Pickup);
+        }
+
         this.body.velocity.normalize();
         this.body.velocity.scale(this.speed, this.body.velocity);
+
+        this.state = this.body.velocity.almostZero(0.00001) ?  PlayerState.STILL : PlayerState.WALKING;
 
         if (this.userInput.mouseDelta[0] !== 0) {
             this.setYaw(this.trans.angle[1] - this.userInput.mouseDelta[0] * dt * this.userInput.sensitivity);
@@ -65,6 +79,17 @@ export class Player extends Entity {
         }
 
         this.setPosition(this.body.position.x, this.body.position.y, this.body.position.z);
+
+        for (const arm of this.arms){
+            arm.setPosition(this.body.position.x, this.body.position.y, this.body.position.z);
+            arm.setYaw(this.trans.angle[1]);
+            arm.update(dt);
+        }
+        for (const leg of this.legs){
+            leg.setPosition(this.body.position.x, 1.61, this.body.position.z);
+            leg.setYaw(this.trans.angle[1]);
+            leg.update(dt);
+        }
     }
 
     public reset(): void {

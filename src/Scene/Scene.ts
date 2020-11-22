@@ -16,7 +16,7 @@ export class Scene {
     private lastUpdate: number = Date.now();
     private userInput: UserInput;
 
-    public levelOrder = ['level4', 'level3'];
+    public levelOrder = ['level3', 'level4', 'level5'];
     public currentLevel = 0;
 
     constructor(
@@ -48,16 +48,18 @@ export class Scene {
         const data = await loadLevelData(levelName);
         this.entManager.createPlayerAt(
             data.spawn,
-            await loadAsset('player'),
-            await loadCollisionBodies('player', BodyType.PLAYER, BodyType.WALL)
+            await loadAsset('player/player'),
+            [await loadAsset('player/l_arm'), await loadAsset('player/r_arm')],
+            [await loadAsset('player/l_leg'), await loadAsset('player/r_leg')],
+            await loadCollisionBodies('player/player_col', BodyType.PLAYER, BodyType.WALL)
         );
 
         this.entManager.addPickups(
-            await loadAsset('cube'),
+            await loadAsset('other/cube'),
             await loadCollisionBodies('levels/' + levelName + '_pickups', BodyType.NONE, BodyType.NONE)
         );
         if (data.exitOrigins.length > 0){
-            this.entManager.createExitAt(await loadAsset('exit'), data.exitOrigins[0], data.exitSize);
+            this.entManager.createExitAt(await loadAsset('other/exit'), data.exitOrigins[0], data.exitSize);
         }
 
         this.entManager.createLevel(
@@ -68,11 +70,7 @@ export class Scene {
     }
 
     public loadNextLevel(): void{
-        this.currentLevel++;
-        if (this.currentLevel >= this.levelOrder.length)
-        {
-            this.currentLevel = 0;
-        }
+        this.currentLevel = (this.currentLevel + 1) % this.levelOrder.length;
         this.loadLevel(this.levelOrder[this.currentLevel]);
     }
 
@@ -98,7 +96,6 @@ export class Scene {
     private preUpdate(): void {
         if (!this.entManager.level.ready && this.entManager.level.check) {
             const len = this.entManager.level.mesh?.materialNames.length!;
-            // console.log(len);
             if (len > 0 && len === this.entManager.level.materialRenderInfos.length) {
                 let loaded = true;
                 for (const it of this.entManager.level.materialRenderInfos) {
@@ -109,7 +106,6 @@ export class Scene {
                 if (loaded) {
                     this.entManager.level.ready = true;
                     this.entManager.level.check = false;
-                    // console.log('ready');
                 }
             }
         }

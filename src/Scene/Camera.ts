@@ -32,7 +32,7 @@ export class Camera{
             }
             input.mouseDelta[1] = 0;
         }
-        const dist = 5.0;
+        const dist = 3.0;
         const a = Math.sin(degToRad(this.pitch));
         const b = Math.cos(degToRad(this.pitch));
         const c = Math.sin(degToRad(player.trans.angle[1] + 90));
@@ -53,7 +53,7 @@ export class Camera{
 
         this.eye = [
             player.trans.pos[0] - dist * c * b,
-            Math.max(player.trans.pos[1] + dist * a + 2, player.trans.pos[1]),
+            Math.max(player.trans.pos[1] + dist * a + 2 * player.trans.scale[1], player.trans.pos[1]) ,
             player.trans.pos[2] - dist * b * d
         ];
         this.center = [

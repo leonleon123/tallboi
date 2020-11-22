@@ -21,8 +21,8 @@ export class EntityManager {
         this.world.gravity.set(0, 0, 0);
     }
 
-    public createPlayerAt(origin: vec3, mesh: Mesh, collisionBodies: Body[]): void {
-        this.player = new Player(this.idGenerator++, origin, mesh, collisionBodies[0], this.userInput);
+    public createPlayerAt(origin: vec3, mesh: Mesh, arms: Mesh[], legs: Mesh[], collisionBodies: Body[]): void {
+        this.player = new Player(this.idGenerator++, origin, mesh, collisionBodies[0], arms, legs, this.userInput);
         this.world.addBody(this.player.body);
         this.entities.push(this.player);
     }
@@ -42,7 +42,7 @@ export class EntityManager {
     public createExitAt(mesh: Mesh, origin: vec3, exitSize: number): void {
         const ex = new Exit(this.idGenerator++, origin, mesh, exitSize, this.player);
         this.entities.push(ex);
-        console.log('spawned exit');
+        // console.log('spawned exit');
     }
 
     public createLevel(mesh: Mesh, collisionBodies: Body[]): void{

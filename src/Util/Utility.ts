@@ -90,19 +90,16 @@ export async function loadLevelData(levelName: string): Promise<LevelData>{
         if (tokens[0] === 'spawn')
         {
             vec3.set(spawnPoint, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
-            console.log('aaa');
         }
         else if (tokens[0] === 'exit_size')
         {
             dExitSize = parseInt(tokens[1], 10);
-            console.log('setting exit size');
         }
         else if (tokens[0] === 'exit')
         {
             const dExitOrigin = vec3.create();
             vec3.set(dExitOrigin, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
             dExitOrigins.push(dExitOrigin);
-            console.log('adding exit');
         }
     }
     const ret: LevelData = {

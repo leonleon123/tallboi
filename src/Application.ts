@@ -28,7 +28,7 @@ export default class Application {
         }
         this.scene = new Scene(this.size);
         this.renderer = new Renderer(this.gl, this.text);
-        console.log(this.scene.levelOrder[this.scene.currentLevel]);
+        // console.log(this.scene.levelOrder[this.scene.currentLevel]);
         this.scene.loadLevel(this.scene.levelOrder[this.scene.currentLevel]).then(this.init);
     }
 

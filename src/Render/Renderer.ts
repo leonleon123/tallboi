@@ -1,10 +1,10 @@
 import { mat4 } from 'gl-matrix';
 import { Entity } from '../Entities/Entity';
+import { Player } from '../Entities/Player';
 import { Camera } from '../Scene/Camera';
 import { Level } from '../Scene/Level';
 import { Scene } from '../Scene/Scene';
 import { MaterialRenderInfo, Shader } from '../Util/Interfaces';
-import { degToRad } from '../Util/Utility';
 import { simpleShader } from './Shaders';
 
 export class Renderer{
@@ -82,6 +82,11 @@ export class Renderer{
     }
 
     public initEntity(entity: Entity): void{
+        if (entity instanceof Player){
+            for (const limb of [...entity.arms, ...entity.legs]){
+                this.initEntity(limb);
+            }
+        }
         entity.materialRenderInfos = [];
         for (let i = 0; i < entity.mesh?.materialNames.length!; i++){
 
@@ -152,7 +157,7 @@ export class Renderer{
                 {
                     entity.check = true;
                 }
-                // console.log('texture loaded for: ' + entity.name);
+                console.log('texture loaded for: ' + entity.name);
             });
             image.addEventListener('error', () => {
                 entity.materialRenderInfos[i].textureLoaded = true;
@@ -176,10 +181,15 @@ export class Renderer{
     }
 
     public renderEntity(entity: Entity, camera: Camera): void{
+        if (entity instanceof Player){
+            for (const limb of [...entity.arms, ...entity.legs]){
+                this.renderEntity(limb, camera);
+            }
+        }
         for (const materialInfo of entity.materialRenderInfos){
             this.gl.bindVertexArray(materialInfo.vao);
 
-            this.gl.uniformMatrix4fv(this.uModelView, false, this.getModelView(entity));
+            this.gl.uniformMatrix4fv(this.uModelView, false, entity.getModelView());
             this.gl.uniformMatrix4fv(this.uProjection, false, this.getProjection(camera));
             const texScale = [materialInfo.material.mapDiffuse.scale.u, materialInfo.material.mapDiffuse.scale.v];
             const texOffset = [materialInfo.material.mapDiffuse.offset.u, materialInfo.material.mapDiffuse.offset.v];
@@ -255,15 +265,4 @@ export class Renderer{
         return P;
     }
 
-    private getModelView(entity: Entity): mat4{
-        // entity
-        const M: mat4 = mat4.create();
-        mat4.translate(M , M, entity.trans.pos);
-        mat4.rotateX(M, M, degToRad(entity.trans.angle[0]));
-        mat4.rotateY(M, M, degToRad(entity.trans.angle[1]));
-        mat4.rotateZ(M, M, degToRad(entity.trans.angle[2]));
-        mat4.scale(M, M, entity.trans.scale);
-
-        return M;
-    }
 }

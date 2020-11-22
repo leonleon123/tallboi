@@ -3,3 +3,8 @@ export enum BodyType{
     PLAYER = 1,
     WALL = 2
 }
+
+export enum PlayerState{
+    WALKING,
+    STILL
+}

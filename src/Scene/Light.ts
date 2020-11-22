@@ -15,7 +15,7 @@ export class Light{
 
     public update(player: Player): void {
             this.position[0] = player.trans.pos[0];
-            this.position[1] = player.trans.pos[1];
+            this.position[1] = player.trans.pos[1] + 10;
             this.position[2] = player.trans.pos[2];
     }
 }

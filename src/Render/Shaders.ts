@@ -66,7 +66,8 @@ in vec2 vTexCoord;
 out vec4 oColor;
 
 void main() {
-    oColor = (vColor * vec4(vLight, 1) + vColor * vec4(0.1, 0.1, 0.1, 1)) * texture(uTexture, vTexCoord * uTexScale + uTexOffset);
+    if(texture(uTexture, vTexCoord * uTexScale + uTexOffset).w < 0.5) discard;
+    oColor = (vColor * vec4(vLight, 1) + vColor * vec4(0.3, 0.3, 0.3, 1)) * texture(uTexture, vTexCoord * uTexScale + uTexOffset);
     // oColor = texture(uTexture, vTexCoord * vec2(6,6)) * vec4(vLight, 1) ;
 }
 `;
