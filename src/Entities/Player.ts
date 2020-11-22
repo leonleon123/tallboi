@@ -22,7 +22,7 @@ export class Player extends Entity {
     public state: PlayerState = PlayerState.STILL;
 
     constructor(
-        id: number, origin: vec3, mesh: Mesh, collisionBody: Body, arms: Mesh[], legs: Mesh[],
+        id: number, origin: vec3, originalYaw: number, mesh: Mesh, collisionBody: Body, arms: Mesh[], legs: Mesh[],
         private userInput: UserInput,
     ) {
         super(id, origin);
@@ -34,7 +34,8 @@ export class Player extends Entity {
         this.body = collisionBody;
         this.body.angularDamping = 1;
         this.originalHeight = (this.body.shapes[0] as any).halfExtents.y;
-        this.originalYaw = this.trans.angle[1];
+        this.originalYaw = originalYaw;
+        this.setYaw(this.originalYaw);
         this.body.position.set(this.origin[0], this.origin[1], this.origin[2]);
         this.arms = arms.map((armMesh, i) => new Arm(armMesh, i * Math.PI, this));
         this.legs = legs.map((legMesh, i) => new Leg(legMesh, i * Math.PI, this));

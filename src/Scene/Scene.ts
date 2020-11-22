@@ -48,6 +48,7 @@ export class Scene {
         const data = await loadLevelData(levelName);
         this.entManager.createPlayerAt(
             data.spawn,
+            data.spawnYaw,
             await loadAsset('player/player'),
             [await loadAsset('player/l_arm'), await loadAsset('player/r_arm')],
             [await loadAsset('player/l_leg'), await loadAsset('player/r_leg')],
@@ -58,8 +59,9 @@ export class Scene {
             await loadAsset('other/cube'),
             await loadCollisionBodies('levels/' + levelName + '_pickups', BodyType.NONE, BodyType.NONE)
         );
-        if (data.exitOrigins.length > 0){
-            this.entManager.createExitAt(await loadAsset('other/exit'), data.exitOrigins[0], data.exitSize);
+
+        for (const origin of data.exitOrigins){
+            this.entManager.createExitAt(await loadAsset('other/exit'), origin, data.exitSize);
         }
 
         this.entManager.createLevel(
@@ -89,7 +91,12 @@ export class Scene {
             }
             this.light.update(this.entManager.player);
             this.camera.update(dt, this.entManager.player, this.userInput);
-            this.entManager.world.step(dt); // this makes the movement work the same on any device
+            if (dt > 0.017){
+                this.entManager.world.step(1 / 60, dt);
+            }
+            else{
+                this.entManager.world.step(dt);
+            }
         }
     }
 

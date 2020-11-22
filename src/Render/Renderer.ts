@@ -222,6 +222,7 @@ export class Renderer{
     private renderText(scene: Scene): void{
         if (!scene.entManager.level.ready){
             this.text.font = '30px Arial';
+            this.text.fillStyle = 'black';
             const x = this.text.canvas.width / 2 - this.text.measureText('Loading').width / 2;
             const y = this.text.canvas.height / 2;
             this.text.fillText('Loading...', x , y);
