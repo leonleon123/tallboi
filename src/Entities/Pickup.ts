@@ -33,7 +33,7 @@ export class Pickup extends Entity {
         point1 = [this.origin[0], this.origin[2]];
         point2 = [this.player.trans.pos[0], this.player.trans.pos[2]];
 
-        if (vec2.dist(point1, point2) < 0.90) {
+        if (vec2.dist(point1, point2) < 0.95) {
             this.player.onPickup(this);
         }
 
