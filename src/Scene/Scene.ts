@@ -17,10 +17,12 @@ export class Scene {
     private userInput: UserInput;
 
     public levelOrder = ['level_tutorial', 'level1', 'level2'];
-    public pickupMeshNames = ['orange', 'watermelon', 'avocado', 'cherry', 'pineapple'];
+    private pickupMeshNames = ['orange', 'watermelon', 'avocado', 'cherry', 'pineapple'];
     public currentLevel = 0;
     public currentLevelData: LevelData;
     public levelStartTime: number;
+    public levelTime = 0;
+    public showEndScreen = false;
 
     constructor(
         private size: Size
@@ -39,8 +41,8 @@ export class Scene {
         );
     }
 
-    public async loadLevel(levelName: string): Promise<void> {
-        console.log('Loading level ' + levelName);
+    public async buildLevel(levelName: string): Promise<void> {
+        console.log('Building level ' + levelName);
         if (this.entManager.level !== undefined)
         {
             this.entManager.level.ready = false;
@@ -63,7 +65,11 @@ export class Scene {
         );
 
         for (const origin of this.currentLevelData.exitOrigins){
-            this.entManager.createExitAt(await loadAsset('other/exit'), origin, this.currentLevelData.exitSize);
+            this.entManager.createExit(await loadAsset('other/exit'), origin, this.currentLevelData.exitSize);
+        }
+
+        for (const warp of this.currentLevelData.warps){
+            this.entManager.createWarp(await loadAsset('other/exit'), warp.origin, warp.to);
         }
 
         this.entManager.createLevel(
@@ -71,22 +77,41 @@ export class Scene {
             await loadCollisionBodies('levels/' + levelName + '_col', BodyType.WALL, BodyType.PLAYER)
         );
         this.camera.pitch = this.camera.defaultPitch;
-        this.levelStartTime = Date.now();
     }
 
     public loadNextLevel(): void{
-        new Audio('assets/sound/level_end.mp3').play();
-        this.currentLevel = (this.currentLevel + 1) % this.levelOrder.length;
-        this.loadLevel(this.levelOrder[this.currentLevel]);
+        new Audio('assets/sounds/level_end.mp3').play();
+        this.currentLevel++;
+        if (this.currentLevel >= this.levelOrder.length){
+            this.currentLevel = 0;
+            this.buildLevel('level_menu');
+            this.showEndScreen = true;
+        }
+        else{
+            this.buildLevel(this.levelOrder[this.currentLevel]);
+        }
+    }
+
+    public loadLevel(name: string): void{
+        for (let i = 0; i < this.levelOrder.length; i++){
+            // tslint:disable-next-line: triple-equals
+            if (this.levelOrder[i].trim() == name.trim()){
+                this.currentLevel = i;
+            }
+        }
+        this.buildLevel(name);
     }
 
     public update(): void {
         // if the delta time between frames is too large, dont even update
         // (to avoid some calculation issues if fps is spiking)
+
         const now = Date.now();
         const dt = (now - this.lastUpdate) / 1000;
         this.lastUpdate = now;
+
         this.preUpdate();
+
         if (dt <= 0.100 && this.entManager.level.ready) {
             for (const entity of this.entManager.entities) {
                 if (entity.active){
@@ -104,7 +129,7 @@ export class Scene {
         }
     }
 
-    private preUpdate(): void {
+    private loadingCheck(): void {
         if (!this.entManager.level.ready && this.entManager.level.check) {
             const len = this.entManager.level.mesh?.materialNames.length!;
             if (len > 0 && len === this.entManager.level.materialRenderInfos.length) {
@@ -117,24 +142,50 @@ export class Scene {
                 if (loaded) {
                     this.entManager.level.ready = true;
                     this.entManager.level.check = false;
+                    this.levelStartTime = Date.now();
+                    this.showEndScreen = false;
                 }
             }
         }
 
+    }
+
+    private levelTransitionCheck(): void {
         if (this.entManager.player.exited){
+            this.levelTime = ((Date.now() - this.levelStartTime) / 1000);
             this.loadNextLevel();
             this.entManager.player.exited = false;
         }
 
+        if (this.entManager.player.warpTo !== ''){
+            this.levelTime = 0;
+            this.loadLevel(this.entManager.player.warpTo);
+            this.entManager.player.warpTo = '';
+        }
+    }
+
+    private generalInput(): void {
         if (this.userInput.onPress('KeyR')){
             this.entManager.player.reset();
             this.camera.pitch = this.camera.defaultPitch;
             this.entManager.enablePersistant();
             this.levelStartTime = Date.now();
         }
-        if (this.userInput.onPress('KeyP')){
+        if (this.userInput.onPress('KeyP') && this.userInput.devMode){
             this.loadNextLevel();
         }
+        if (this.userInput.onPress('KeyL') && this.userInput.devMode){
+            this.entManager.player.warpTo = 'level_menu';
+        }
+        if (this.userInput.onPress('KeyM') && this.userInput.devMode){
+            this.entManager.player.exited = true;
+        }
+    }
+
+    private preUpdate(): void {
+        this.loadingCheck();
+        this.levelTransitionCheck();
+        this.generalInput();
     }
 
 

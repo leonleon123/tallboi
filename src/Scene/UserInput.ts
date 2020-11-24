@@ -5,8 +5,9 @@ export class UserInput{
     private keysCooldown = new Set<string>();
     public sensitivity = 10.0;
     public mouseDelta: Array<number> = [0, 0];
+    public devMode = true;
 
-    onPress(key: string): boolean {
+    public onPress(key: string): boolean {
         if (this.keysPressedOnce.has(key)) {
             this.keysPressedOnce.delete(key);
             this.keysCooldown.add(key);
@@ -18,7 +19,7 @@ export class UserInput{
 
     }
 
-    isPressed(key: string): boolean {
+    public isPressed(key: string): boolean {
         return this.keysPressed.has(key);
     }
 

@@ -17,6 +17,7 @@ export class Exit extends Entity {
         this.red = true;
         this.persistant = true;
         this.color = [1, 0, 0, 1];
+        this.trans.scale = [0.2, 0.2, 0.2];
     }
 
     public update(dt: number): void {
@@ -33,7 +34,7 @@ export class Exit extends Entity {
             point1 = [this.origin[0], this.origin[2]];
             point2 = [this.player.trans.pos[0], this.player.trans.pos[2]];
 
-            if (vec2.dist(point1, point2) < 0.75) {
+            if (vec2.dist(point1, point2) < 0.60) {
                 this.player.exited = true;
             }
         }

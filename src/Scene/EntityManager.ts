@@ -5,6 +5,7 @@ import { Entity } from '../Entities/Entity';
 import { Exit } from '../Entities/Exit';
 import { Pickup } from '../Entities/Pickup';
 import { Player } from '../Entities/Player';
+import { Warp } from '../Entities/Warp';
 import { pickRandom } from '../Util/Utility';
 import { Level } from './Level';
 import { UserInput } from './UserInput';
@@ -36,14 +37,17 @@ export class EntityManager {
 
     public addPickup(origin: vec3, mesh: Mesh): void {
         const pu = new Pickup(this.idGenerator++, origin, mesh, this.player);
-        // pu.setScale(0.2, 0.2, 0.2);
         this.entities.push(pu);
     }
 
-    public createExitAt(mesh: Mesh, origin: vec3, exitSize: number): void {
+    public createExit(mesh: Mesh, origin: vec3, exitSize: number): void {
         const ex = new Exit(this.idGenerator++, origin, mesh, exitSize, this.player);
         this.entities.push(ex);
-        // console.log('spawned exit');
+    }
+
+    public createWarp(mesh: Mesh, origin: vec3, to: string): void {
+        const ex = new Warp(this.idGenerator++, origin, mesh, to, this.player);
+        this.entities.push(ex);
     }
 
     public createLevel(mesh: Mesh, collisionBodies: Body[]): void{

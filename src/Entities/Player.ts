@@ -20,6 +20,7 @@ export class Player extends Entity {
     public legs: Leg[];
     public body: Body;
     public state: PlayerState = PlayerState.STILL;
+    public warpTo = '';
 
     constructor(
         id: number, origin: vec3, originalYaw: number, mesh: Mesh, collisionBody: Body, arms: Mesh[], legs: Mesh[],
@@ -37,8 +38,8 @@ export class Player extends Entity {
         this.originalYaw = originalYaw;
         this.setYaw(this.originalYaw);
         this.body.position.set(this.origin[0], this.origin[1], this.origin[2]);
-        this.arms = arms.map((armMesh, i) => new Arm(armMesh, i * Math.PI, this));
-        this.legs = legs.map((legMesh, i) => new Leg(legMesh, i * Math.PI, this));
+        this.arms = arms.map((armMesh, i) => new Arm(armMesh, i, this));
+        this.legs = legs.map((legMesh, i) => new Leg(legMesh, i, this));
 
     }
 
@@ -61,7 +62,7 @@ export class Player extends Entity {
             this.body.velocity.vadd(strafeRight, this.body.velocity);
         }
 
-        if (this.userInput.onPress('KeyF')){
+        if (this.userInput.onPress('KeyF') && this.userInput.devMode){
             this.onPickup({} as Pickup);
         }
 
@@ -75,7 +76,7 @@ export class Player extends Entity {
             this.userInput.mouseDelta[0] = 0;
         }
 
-        if (this.userInput.onPress('KeyN')){
+        if (this.userInput.onPress('KeyN') && this.userInput.devMode){
             this.drawLoc = !this.drawLoc;
         }
 
@@ -108,7 +109,7 @@ export class Player extends Entity {
     }
 
     public onPickup(pickup: Pickup): void {
-        new Audio('assets/sound/eat.mp3').play();
+        new Audio('assets/sounds/eat.mp3').play();
         const {x, y, z} = (this.body.shapes[0] as any).halfExtents;
         this.body.shapes = [];
         this.height++;

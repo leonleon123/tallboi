@@ -13,10 +13,6 @@ export default class Application {
     constructor(
         private canvas: HTMLCanvasElement, private textCanvas: HTMLCanvasElement, levelNameOverride?: string
     ) {
-        const audio = new Audio('assets/sound/soundtrack_1.mp3');
-        audio.loop = true;
-        audio.volume = 0.1;
-        audio.play();
         this.canvas.width = this.size.width;
         this.canvas.height = this.size.height;
         this.textCanvas.width = this.size.width;
@@ -32,11 +28,15 @@ export default class Application {
         }
         this.scene = new Scene(this.size);
         this.renderer = new Renderer(this.gl, this.text, this.size);
-        this.scene.loadLevel(levelNameOverride || this.scene.levelOrder[this.scene.currentLevel]).then(this.init);
+        this.scene.buildLevel(levelNameOverride || this.scene.levelOrder[this.scene.currentLevel]).then(this.init);
     }
 
     public init = (): void => {
         this.renderer.initScene(this.scene);
+        const audio = new Audio('assets/sounds/soundtrack_1.mp3');
+        audio.loop = true;
+        audio.volume = 0.1;
+        audio.play();
         requestAnimationFrame(this.update);
     }
 

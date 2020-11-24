@@ -33,7 +33,6 @@ export class Renderer{
         this.buildProgram(simpleShader);
         this.initLevel(scene.entManager.level);
         this.gl.enable(this.gl.DEPTH_TEST);
-        // this.gl.enable(this.gl.CULL_FACE);
 
         this.uModelView = this.gl.getUniformLocation(this.program, 'uModelView')!;
         this.uProjection = this.gl.getUniformLocation(this.program, 'uProjection')!;
@@ -166,7 +165,7 @@ export class Renderer{
                 console.log('Texture name: ' + image.src);
             });
             image.src = `assets/textures/${entity.mesh?.materialsByIndex[i].mapDiffuse.filename}`;
-            console.log('inited: ' + entity.name);
+            console.log('inited: ' + entity.name + ' with material: ' + entity.mesh?.materialNames[i]);
 
             const materialRenderInfo: MaterialRenderInfo = {
                 vao: vao!,
@@ -226,7 +225,36 @@ export class Renderer{
             this.text.fillStyle = 'black';
             const x = this.text.canvas.width / 2 - this.text.measureText('Loading').width / 2;
             const y = this.text.canvas.height / 2;
-            this.text.fillText('Loading...', x , y);
+            if (!scene.showEndScreen){
+                this.text.fillText('Loading...', x , y);
+            }
+
+            if (scene.levelTime > 0){
+                // level end timer
+                this.text.font = '30px Arial';
+                this.text.fillStyle = 'darkgreen';
+                this.text.fillText(
+                    `⌚️ ${scene.levelTime.toFixed(1)}`,
+                    this.size.width / 2 - this.text.measureText(`⌚️ ${scene.levelTime.toFixed(1)}`).width / 2,
+                    80
+                );
+                if (scene.showEndScreen)
+                {
+                    this.text.font = '30px Arial';
+                    this.text.fillStyle = 'darkgreen';
+                    this.text.fillText(
+                        'Congratulations! You have beaten the last stage.',
+                        this.size.width / 2 - this.text.measureText('Congratulations! You have beaten the last stage.').width / 2,
+                        (80 + y) / 2
+                    );
+                    this.text.fillStyle = 'black';
+                    this.text.fillText(
+                        'Returning to stage select...',
+                        this.size.width / 2 - this.text.measureText('Returning to stage select...').width / 2,
+                        y
+                    );
+                }
+            }
         }
         else
         {
@@ -238,31 +266,32 @@ export class Renderer{
                 this.text.fillText('Y: ' + scene.entManager.player.trans.pos[1].toFixed(2), 0, 35);
                 this.text.fillText('Z: ' + scene.entManager.player.trans.pos[2].toFixed(2), 0, 55);
             }
-        }
-        if (scene.currentLevelData.exitSize > 0){
-            this.text.fillStyle = 'red';
-            // pickup icons
-            this.text.font = '18px Arial';
-            this.text.fillStyle = 'white';
-            this.text.fillText(
-                '🍉🍊🥑🍍🍒',
-                this.size.width - 250,
-                this.size.height - 100
-            );
-            // timer
-            this.text.font = '30px Arial';
-            this.text.fillText(
-                `⌚️ ${Math.round(((Date.now() - scene.levelStartTime) / 1000) * 100) / 100}`,
-                this.size.width / 2 - 60,
-                80
-            );
-            // number of collected pickups, this turns green when all required pickups were picked up
-            this.text.fillStyle = scene.entManager.player.height >= scene.currentLevelData.exitSize ? 'lime' : 'white';
-            this.text.fillText(
-                `${scene.entManager.player.height}/${scene.currentLevelData.exitSize}`,
-                this.size.width - 210,
-                this.size.height - 130
-            );
+            if (scene.currentLevelData.exitSize > 0){
+                this.text.fillStyle = 'red';
+                // pickup icons
+                this.text.font = '18px Arial';
+                this.text.fillStyle = 'white';
+                this.text.fillText(
+                    '🍉🍊🥑🍍🍒',
+                    this.size.width - 250,
+                    this.size.height - 100
+                );
+                // timer
+                this.text.font = '30px Arial';
+                this.text.fillStyle = 'black';
+                this.text.fillText(
+                    `⌚️ ${((Date.now() - scene.levelStartTime) / 1000).toFixed(1)}`,
+                    this.size.width / 2 - this.text.measureText(`⌚️ ${((Date.now() - scene.levelStartTime) / 1000).toFixed(1)}`).width / 2,
+                    80
+                );
+                // number of collected pickups, this turns green when all required pickups were picked up
+                this.text.fillStyle = scene.entManager.player.height >= scene.currentLevelData.exitSize ? 'lime' : 'white';
+                this.text.fillText(
+                    `${scene.entManager.player.height}/${scene.currentLevelData.exitSize}`,
+                    this.size.width - 210,
+                    this.size.height - 130
+                );
+            }
         }
     }
 

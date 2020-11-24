@@ -11,7 +11,7 @@ export class Level extends Entity {
 
     constructor(id: number, mesh: Mesh, collisionBodies: Body[]) {
         super(id, [0, 0, 0]);
-        this.name = 'level';
+        this.name = 'levelComponent';
         this.mesh = mesh;
         // this.color = [240 / 256, 198 / 256, 120 / 256, 1];
         this.collisionBodies = collisionBodies;

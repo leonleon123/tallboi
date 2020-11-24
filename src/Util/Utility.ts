@@ -82,14 +82,13 @@ export function getBodyFromVertices(vertices: vec3[], group: BodyType, filter: B
 export async function loadLevelData(levelName: string): Promise<LevelData>{
     const req = await fetch(`assets/data/${levelName}.data`);
     const data = await req.text();
-    console.log(data);
     const lines = data.split('\n');
     const spawnPoint = vec3.create();
     const dExitOrigins: Array<vec3> = [];
     const dWarps: Array<WarpInfo> = [];
-
     let dExitSize = 0;
     let dSpawnYaw = 0;
+    // console.log(data);
     for (const line of lines)
     {
         const tokens = line.split(' ');
@@ -98,7 +97,7 @@ export async function loadLevelData(levelName: string): Promise<LevelData>{
             vec3.set(spawnPoint, parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
             if (tokens[4] !== undefined && parseFloat(tokens[4])){
                 dSpawnYaw = parseFloat(tokens[4]);
-                console.log('setting custom yaw');
+                // console.log('setting custom yaw');
             }
         }
         else if (tokens[0] === 'exit_size')

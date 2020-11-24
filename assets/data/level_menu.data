@@ -1,3 +1,6 @@
 spawn 0 0 -7 -90
 exit_size 0
+warp 3.8 1 6.33 level_tutorial
+warp 0 1 6.33 level1
+warp -3.8 1 6.33 level2
 

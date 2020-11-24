@@ -31,7 +31,6 @@ export abstract class Entity {
 
     public setPosition(x: number, y: number, z: number): void {
         this.trans.pos = [x, y, z];
-        // todo: limits etc
     }
 
     public setRoll(roll: number): void {
@@ -52,7 +51,6 @@ export abstract class Entity {
             yaw -= 360;
         }
         this.trans.angle[1] = yaw;
-        // It should be + at sinus, but only - works. Why?
         this.trans.yawVector = [Math.cos(degToRad(yaw)), 0, -Math.sin(degToRad(yaw))];
     }
 
@@ -70,18 +68,15 @@ export abstract class Entity {
         this.setRoll(roll);
         this.setYaw(yaw);
         this.setPitch(pitch);
-        // todo: limits etc
     }
 
     public setScale(x: number, y: number, z: number): void {
         this.trans.scale = [x, y, z];
-        // todo: limits etc
     }
 
     abstract update(dt: number): void;
 
     public getModelView(): mat4{
-        // entity
         const M: mat4 = mat4.create();
         mat4.translate(M , M, this.trans.pos);
         mat4.rotateX(M, M, degToRad(this.trans.angle[0]));

@@ -18,9 +18,7 @@ export class Camera{
         mat4.perspective(this.perspective, degToRad(90), this.size.width / this.size.height , 1, 100);
     }
 
-    update(dt: number, player: Player, input: UserInput): void {
-        // const playerLookAt: vec3 = vec3.create();
-        // const eyeOffset: vec3 = vec3.create();
+    public update(dt: number, player: Player, input: UserInput): void {
         if (input.mouseDelta[1] !== 0) {
             this.pitch += (input.mouseDelta[1] * dt * input.sensitivity);
 
@@ -37,19 +35,6 @@ export class Camera{
         const b = Math.cos(degToRad(this.pitch));
         const c = Math.sin(degToRad(player.trans.angle[1] + 90));
         const d = Math.cos(degToRad(player.trans.angle[1] + 90));
-
-        // playerLookAt = [player.trans.yawVector[0]*3,0,player.trans.yawVector[2]*3];
-        // eyeOffset = [player.trans.yawVector[0]*3,0,player.trans.yawVector[2]*3];
-        // this.eye = [
-        //     player.trans.pos[0]-eyeOffset[0],
-        //     player.trans.pos[1]+3+3*Math.sin(degToRad(this.pitch)),
-        //     player.trans.pos[2]-eyeOffset[2]
-        // ];
-        // this.center = [
-        //     player.trans.pos[0]+playerLookAt[0],
-        //     player.trans.pos[1]-3*Math.sin(degToRad(this.pitch)),
-        //     player.trans.pos[2]+playerLookAt[2]
-        // ];
 
         this.eye = [
             player.trans.pos[0] - dist * c * b,

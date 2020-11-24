@@ -5,20 +5,33 @@ import { Player } from './Player';
 
 export class Arm extends Entity {
 
-    private x = 0;
+    private period: number;
+    private speed = 175;
 
-    constructor(mesh: Mesh, private period: number, private player: Player){
+    constructor(mesh: Mesh, period: number, private player: Player){
         super(0, [0, 0, 0]);
+        this.name = 'arm';
         this.mesh = mesh;
+        if (period % 2 === 0){
+            this.period = 1;
+        }
+        else{
+            this.period = -1;
+        }
     }
 
-    update(dt: number): void{
+    public update(dt: number): void{
         if (this.player.state === PlayerState.WALKING){
-            this.setPitch(this.trans.angle[2] + Math.sin(this.x + this.period - Math.PI / 2) * 2);
-            this.x = this.x + 0.05;
-        }else{
+            if (this.trans.angle[2] > 45){
+                this.period = -1;
+            }
+            else if (this.trans.angle[2] < -45){
+                this.period = 1;
+            }
+            this.setPitch(this.trans.angle[2] + dt * this.speed * this.period);
+        }
+        else {
             this.setPitch(0);
-            this.x = 0;
         }
     }
 }
