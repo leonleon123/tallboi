@@ -4,11 +4,11 @@ let app: Application;
 
 window.addEventListener('load', async () => {
     document.getElementById('start')?.addEventListener('click', () => {
-        document.getElementById('splash')!.style.visibility = 'hidden';
+        document.getElementById('splash')?.remove();
         start();
     });
     document.getElementById('stage')?.addEventListener('click', () => {
-        document.getElementById('splash')!.style.visibility = 'hidden';
+        document.getElementById('splash')?.remove();
         start('level_menu');
     });
 });
