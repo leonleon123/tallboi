@@ -8,7 +8,7 @@ export default class Application {
     private text: CanvasRenderingContext2D;
     private renderer: Renderer;
     private scene: Scene;
-    private size: Size = { width: 1280, height: 720 };
+    private size: Size = { width: window.innerWidth, height: window.innerHeight };
 
     constructor(
         private canvas: HTMLCanvasElement, private textCanvas: HTMLCanvasElement, levelNameOverride?: string

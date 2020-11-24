@@ -5,7 +5,7 @@ export class UserInput{
     private keysCooldown = new Set<string>();
     public sensitivity = 10.0;
     public mouseDelta: Array<number> = [0, 0];
-    public devMode = true;
+    public devMode = false;
 
     public onPress(key: string): boolean {
         if (this.keysPressedOnce.has(key)) {
