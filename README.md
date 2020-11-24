@@ -2,7 +2,7 @@
 
 ## init
 
-* to init run `npm install` (or `npm i` for short) to install dependencies
+* to init run `npm install` (or `npm i` for short) to install dependencies (works on Node v14.15.1, we don't guarantee that for higher versions)
 
 ## compile
 
