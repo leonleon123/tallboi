@@ -19,6 +19,10 @@ export async function loadAsset(file: string): Promise<Mesh> {
     return new Promise((resolve, reject) => resolve(mesh));
 }
 
+export async function loadAssets(files: string[]): Promise<Mesh[]> {
+    return Promise.all(files.map(name => loadAsset(name)));
+}
+
 export async function loadCollisionBodies(file: string, group: number, filter: number): Promise<Body[]>{
     const req = await fetch(`assets/meshes/${file}.obj`);
     const text = await req.text();
@@ -127,4 +131,8 @@ export async function loadLevelData(levelName: string): Promise<LevelData>{
         warps: dWarps
     };
     return ret;
+}
+
+export function pickRandom<T>(arr: Array<T>): T{
+    return arr[Math.floor(Math.random() * arr.length)];
 }

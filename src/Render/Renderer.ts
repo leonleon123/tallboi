@@ -4,7 +4,7 @@ import { Player } from '../Entities/Player';
 import { Camera } from '../Scene/Camera';
 import { Level } from '../Scene/Level';
 import { Scene } from '../Scene/Scene';
-import { MaterialRenderInfo, Shader } from '../Util/Interfaces';
+import { MaterialRenderInfo, Shader, Size } from '../Util/Interfaces';
 import { simpleShader } from './Shaders';
 
 export class Renderer{
@@ -25,14 +25,15 @@ export class Renderer{
 
     constructor(
         private gl: WebGL2RenderingContext,
-        private text: CanvasRenderingContext2D
+        private text: CanvasRenderingContext2D,
+        private size: Size
     ) { }
 
     public initScene(scene: Scene): void{
         this.buildProgram(simpleShader);
         this.initLevel(scene.entManager.level);
         this.gl.enable(this.gl.DEPTH_TEST);
-        this.gl.enable(this.gl.CULL_FACE);
+        // this.gl.enable(this.gl.CULL_FACE);
 
         this.uModelView = this.gl.getUniformLocation(this.program, 'uModelView')!;
         this.uProjection = this.gl.getUniformLocation(this.program, 'uProjection')!;
@@ -237,6 +238,31 @@ export class Renderer{
                 this.text.fillText('Y: ' + scene.entManager.player.trans.pos[1].toFixed(2), 0, 35);
                 this.text.fillText('Z: ' + scene.entManager.player.trans.pos[2].toFixed(2), 0, 55);
             }
+        }
+        if (scene.currentLevelData.exitSize > 0){
+            this.text.fillStyle = 'red';
+            // pickup icons
+            this.text.font = '18px Arial';
+            this.text.fillStyle = 'white';
+            this.text.fillText(
+                '🍉🍊🥑🍍🍒',
+                this.size.width - 250,
+                this.size.height - 100
+            );
+            // timer
+            this.text.font = '30px Arial';
+            this.text.fillText(
+                `⌚️ ${Math.round(((Date.now() - scene.levelStartTime) / 1000) * 100) / 100}`,
+                this.size.width / 2 - 60,
+                80
+            );
+            // number of collected pickups, this turns green when all required pickups were picked up
+            this.text.fillStyle = scene.entManager.player.height >= scene.currentLevelData.exitSize ? 'lime' : 'white';
+            this.text.fillText(
+                `${scene.entManager.player.height}/${scene.currentLevelData.exitSize}`,
+                this.size.width - 210,
+                this.size.height - 130
+            );
         }
     }
 

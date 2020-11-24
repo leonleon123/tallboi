@@ -5,6 +5,7 @@ import { Entity } from '../Entities/Entity';
 import { Exit } from '../Entities/Exit';
 import { Pickup } from '../Entities/Pickup';
 import { Player } from '../Entities/Player';
+import { pickRandom } from '../Util/Utility';
 import { Level } from './Level';
 import { UserInput } from './UserInput';
 
@@ -27,15 +28,15 @@ export class EntityManager {
         this.entities.push(this.player);
     }
 
-    public addPickups(mesh: Mesh, collisionBodies: Body[]): void{
+    public addPickups(meshes: Mesh[], collisionBodies: Body[]): void{
         for (const body of collisionBodies){
-            this.addPickup([body.position.x, body.position.y, body.position.z], mesh);
+            this.addPickup([body.position.x, body.position.y, body.position.z], pickRandom(meshes));
         }
     }
 
     public addPickup(origin: vec3, mesh: Mesh): void {
         const pu = new Pickup(this.idGenerator++, origin, mesh, this.player);
-        pu.setScale(0.2, 0.2, 0.2);
+        // pu.setScale(0.2, 0.2, 0.2);
         this.entities.push(pu);
     }
 

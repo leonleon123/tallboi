@@ -19,8 +19,8 @@ export class Camera{
     }
 
     update(dt: number, player: Player, input: UserInput): void {
-        const playerLookAt: vec3 = vec3.create();
-        const eyeOffset: vec3 = vec3.create();
+        // const playerLookAt: vec3 = vec3.create();
+        // const eyeOffset: vec3 = vec3.create();
         if (input.mouseDelta[1] !== 0) {
             this.pitch += (input.mouseDelta[1] * dt * input.sensitivity);
 

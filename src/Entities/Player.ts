@@ -10,7 +10,7 @@ import { Leg } from './Leg';
 import { Pickup } from './Pickup';
 
 export class Player extends Entity {
-    private speed = 7.0; // maybe start faster and lose speed when larger?
+    private speed = 8.0; // maybe start faster and lose speed when larger?
     public height = 0;
     private originalHeight: number;
     private originalYaw: number;
@@ -108,13 +108,7 @@ export class Player extends Entity {
     }
 
     public onPickup(pickup: Pickup): void {
-        /*
-        these are scaling factors for current setup, comes in handy when designing maps
-        1.3418913273575974
-        1.6837826547151948
-        2.0256739820727923
-        2.3675653094303897
-        */
+        new Audio('assets/sound/eat.mp3').play();
         const {x, y, z} = (this.body.shapes[0] as any).halfExtents;
         this.body.shapes = [];
         this.height++;

@@ -1,18 +1,58 @@
 html, body{
     height: 100%;
+    width: 100%;
+}
+
+body{
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 0;
+    overflow: hidden;
 }
 
-.container {
+.canvas-container {
     position: relative;
 }
  
+
+.container{
+    display: flex;
+    flex-direction: column;
+}
+
+.container > button{
+    margin-bottom: 2em;
+    border: none;
+    padding: 1em;
+    border-radius: 1em;
+}
+.container > button:hover{
+    cursor: pointer;
+    background-color: rgb(202, 64, 64);
+}
+.container > button:focus{
+    outline: none;
+}
+
+.container > button:active{
+    background-color:  rgba(202, 64, 64, 0.529);
+}
+
+
 #text {
     position: absolute;
     left: 0px;
     top: 0px;
     z-index: 10;
+}
+
+#splash{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#splash > img{
+    margin: 2em;
 }

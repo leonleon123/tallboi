@@ -1,7 +1,7 @@
 import { World } from 'cannon';
 import { BodyType } from '../Util/Enums';
-import { Size } from '../Util/Interfaces';
-import { loadAsset, loadCollisionBodies, loadLevelData } from '../Util/Utility';
+import { LevelData, Size } from '../Util/Interfaces';
+import { loadAsset, loadAssets, loadCollisionBodies, loadLevelData } from '../Util/Utility';
 import { Camera } from './Camera';
 import { EntityManager } from './EntityManager';
 import { Light } from './Light';
@@ -16,8 +16,11 @@ export class Scene {
     private lastUpdate: number = Date.now();
     private userInput: UserInput;
 
-    public levelOrder = ['level3', 'level4', 'level5'];
+    public levelOrder = ['level_tutorial', 'level1', 'level2'];
+    public pickupMeshNames = ['orange', 'watermelon', 'avocado', 'cherry', 'pineapple'];
     public currentLevel = 0;
+    public currentLevelData: LevelData;
+    public levelStartTime: number;
 
     constructor(
         private size: Size
@@ -26,13 +29,13 @@ export class Scene {
         this.entManager = new EntityManager(this.userInput);
         this.camera = new Camera(this.size);
         this.light = new Light(
-            [0, 15, 0], // position
-            0.5, // ambient
-            0.2, // diffuse
-            0, // specular
+            [0, 0, 0], // position
+            0.8, // ambient
+            0.1, // diffuse
+            0.8, // specular
             10, // shininess
             [1, 1, 1], // color
-            [0.6, 0, 0.02] // attenuation
+            [0.4, 0, 0.02] // attenuation
         );
     }
 
@@ -45,23 +48,22 @@ export class Scene {
         this.entManager.entities = [];
         this.entManager.world = new World();
         this.entManager.world.gravity.set(0, 0, 0);
-        const data = await loadLevelData(levelName);
+        this.currentLevelData = await loadLevelData(levelName);
         this.entManager.createPlayerAt(
-            data.spawn,
-            data.spawnYaw,
+            this.currentLevelData.spawn,
+            this.currentLevelData.spawnYaw,
             await loadAsset('player/player'),
             [await loadAsset('player/l_arm'), await loadAsset('player/r_arm')],
             [await loadAsset('player/l_leg'), await loadAsset('player/r_leg')],
             await loadCollisionBodies('player/player_col', BodyType.PLAYER, BodyType.WALL)
         );
-
         this.entManager.addPickups(
-            await loadAsset('other/cube'),
+            await loadAssets(this.pickupMeshNames.map(name => 'pickups/' + name)),
             await loadCollisionBodies('levels/' + levelName + '_pickups', BodyType.NONE, BodyType.NONE)
         );
 
-        for (const origin of data.exitOrigins){
-            this.entManager.createExitAt(await loadAsset('other/exit'), origin, data.exitSize);
+        for (const origin of this.currentLevelData.exitOrigins){
+            this.entManager.createExitAt(await loadAsset('other/exit'), origin, this.currentLevelData.exitSize);
         }
 
         this.entManager.createLevel(
@@ -69,9 +71,11 @@ export class Scene {
             await loadCollisionBodies('levels/' + levelName + '_col', BodyType.WALL, BodyType.PLAYER)
         );
         this.camera.pitch = this.camera.defaultPitch;
+        this.levelStartTime = Date.now();
     }
 
     public loadNextLevel(): void{
+        new Audio('assets/sound/level_end.mp3').play();
         this.currentLevel = (this.currentLevel + 1) % this.levelOrder.length;
         this.loadLevel(this.levelOrder[this.currentLevel]);
     }
@@ -126,6 +130,7 @@ export class Scene {
             this.entManager.player.reset();
             this.camera.pitch = this.camera.defaultPitch;
             this.entManager.enablePersistant();
+            this.levelStartTime = Date.now();
         }
         if (this.userInput.onPress('KeyP')){
             this.loadNextLevel();
